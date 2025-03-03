@@ -1,0 +1,2 @@
+- load_files_from_folder
+- svaki se snapshot dijeli u zajednice
