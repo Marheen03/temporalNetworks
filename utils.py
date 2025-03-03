@@ -44,12 +44,13 @@ def getCommunityOfNode(node, communities):
     Returns community ID in which given node is part of.
 
     Parameters:
-    node (str): Node for which we are searching comunity.
+    node (str): The node whose community we want to find.
     communities (list): List of communities represented as sets.
 
     Returns:
-    int: ID of community.
+    int: ID of community or -1 if given node can't be found.
     """
     for i, community in enumerate(communities):
         if node in community:
             return i+1
+    return -1
