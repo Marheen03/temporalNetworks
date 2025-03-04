@@ -29,7 +29,6 @@ def load_files_from_folder(path, file_format=".csv", n_sort=False):
     if not os.listdir(path): sys.exit("Directory is empty")
 
     files_dict = {}
-
     for r, d, f in os.walk(path):
         if n_sort:
             f = natural_sort(f)
@@ -39,18 +38,56 @@ def load_files_from_folder(path, file_format=".csv", n_sort=False):
     return files_dict
 
 
-def getCommunityOfNode(node, communities):
+def get_community_of_node(communities, numOfFlies=12):
     """
     Returns community ID in which given node is part of.
 
     Parameters:
-    node (str): The node whose community we want to find.
     communities (list): List of communities represented as sets.
+    numOfFlies (int): Total number of observed flies.
 
     Returns:
-    int: ID of community or -1 if given node can't be found.
+    dict: flies as keys and community ID as values (-1 if node isn't part of community).
     """
-    for i, community in enumerate(communities):
-        if node in community:
-            return i+1
-    return -1
+
+    allFlies = []
+    for i in range(numOfFlies):
+        fly = 'fly' + str(i+1)
+        allFlies.append(fly)
+
+    communityOfNode = {}
+    for fly in allFlies:
+        for i, community in enumerate(communities):
+            # check if fly is within certain community
+            if fly in community:
+                communityOfNode[fly] = i+1
+            else:
+                communityOfNode[fly] = -1
+    
+    return communityOfNode
+
+
+def find_isolated_nodes(communities, numOfFlies=12):
+    """
+    Returns isolated nodes (flies) from given snapshot.
+
+    Parameters:
+    communities (list): List of communities represented as sets.
+    numOfFlies (int): Total number of observed flies.
+
+    Returns:
+    set: Set containing isolated nodes (flies).
+    """
+
+    allFlies = set()
+    for i in range(numOfFlies):
+        fly = 'fly' + str(i+1)
+        allFlies.add(fly)
+
+    currentCommunity = set()
+    for community in communities:
+        for node in community:
+            currentCommunity.add(node)
+    
+    isolatedNodes = allFlies.difference(currentCommunity)
+    return isolatedNodes
