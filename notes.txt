@@ -1,0 +1,4 @@
+- load_files_from_folder
+- svaki se snapshot dijeli u zajednice
+- kod Louvainovog algoritma u nekim snapshotovima detektiraju se zajednice od samo jednog čvora
+    (tzv. izolirane zajednice)

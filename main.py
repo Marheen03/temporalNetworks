@@ -3,14 +3,17 @@ import utils, networkx as nx
 url = 'CsCh_10'
 snapshot_graphs = utils.load_files_from_folder(url, n_sort=True, file_format=".gml")
 
-# for each snapshot
 numberOfCommunities = 0
 isolatedNodes = 0
 snapshots = 0
 maxCommunitySize = 0
 
-communityDetection = "x"
+communitySizes = []
+numberOfIsolatedNodes = []
 
+communityDetection = "louvain"
+
+# for each snapshot
 for i, graph_path in enumerate(snapshot_graphs.values()):
     G = nx.read_gml(graph_path)
     if communityDetection == "girvan_newman":
@@ -22,7 +25,7 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
             if len(community) == 1:
                 isolatedCommunities += 1
         isolatedNodes += isolatedCommunities
-    else:
+    elif communityDetection == "louvain":
         communities = nx.community.louvain_communities(G, weight="count")
         isolatedCommunities = 0
 
@@ -36,11 +39,15 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
  
     communityOfNode = utils.get_community_of_node(communities)
     #print("{}. snapshot:".format(i+1), communityOfNode)
+
+    communitySizes.append(len(communities) - isolatedCommunities)
+    numberOfIsolatedNodes.append(len(utils.find_isolated_nodes(communities)) + isolatedCommunities)
     snapshots += 1
+
 
 if communityDetection == "girvan_newman":
     print("GIRVAN-NEWMANOV ALGORITAM")
-else:
+elif communityDetection == "louvain":
     print("LOUVAINOV ALGORITAM")
 
 print("Duljina najveće zajednice:", maxCommunitySize)
@@ -49,3 +56,6 @@ print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
 
 print("Ukupan broj izoliranih mušica:", isolatedNodes)
 print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
+
+utils.createHistogram(communitySizes, 'community_size')
+utils.createHistogram(numberOfIsolatedNodes, 'isolated_flies')

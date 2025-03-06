@@ -1,4 +1,4 @@
-import os, sys, re, networkx as nx
+import os, sys, re, networkx as nx, matplotlib.pyplot as plt
 
 # removes edge with the highest centrality based on weight
 def most_central_edge(G):
@@ -98,3 +98,21 @@ def get_community_of_node(communities, numOfFlies=12):
             communityOfNode[fly] = -1
     
     return communityOfNode
+
+
+# creates histogram displaying community sizes for each snapshot
+def createHistogram(dataset, type):
+    _, _, bars = plt.hist(dataset, bins=range(1, max(dataset)+2),
+                               align="left", edgecolor='black', linewidth=1.2)
+    plt.bar_label(bars)
+    plt.xticks(range(1, max(dataset)+2))
+
+    if type == 'community_size':
+        plt.title("Histogram veličina zajednica")
+        plt.xlabel("Veličina zajednica")
+    elif type == 'isolated_flies':
+        plt.title("Histogram izoliranih mušica")
+        plt.xlabel("Broj izoliranih mušica")
+    
+    plt.ylabel("Broj snapshotova")
+    plt.show()
