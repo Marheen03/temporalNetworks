@@ -90,28 +90,49 @@ def get_community_of_node(communities, numOfFlies=12):
 
     communityOfNode = {}
     for fly in allFlies:
+        communityOfNode[fly] = -1
+        
         for i, community in enumerate(communities):
             # check if fly is within certain community
             if fly in community:
                 communityOfNode[fly] = i+1
                 break
-            communityOfNode[fly] = -1
     
     return communityOfNode
 
 
 # creates histogram displaying community sizes for each snapshot
-def createHistogram(dataset, type):
+def createHistogram(dataset, type, communityDetection, usingWeights):
     _, _, bars = plt.hist(dataset, bins=range(1, max(dataset)+2),
                                align="left", edgecolor='black', linewidth=1.2)
-    plt.bar_label(bars)
     plt.xticks(range(1, max(dataset)+2))
+    
+    # extract heights of the bars
+    heights = [bar.get_height() for bar in bars]
+    total = sum(heights)  # total count
+    
+    # add labels with both count and percentage
+    for bar, height in zip(bars, heights):
+        if height > 0:
+            plt.text(bar.get_x() + bar.get_width() / 2, height, 
+                    f'{int(height)} ({(height / total * 100):.1f}%)', 
+                    ha='center', va='bottom')
+
+    if communityDetection == "girvan_newman":
+        detectionAlgorithm = "GN"
+    elif communityDetection == "louvain":
+        detectionAlgorithm = "LOUVAIN"
+    
+    if usingWeights:
+        weights = "(TEŽINA)"
+    else:
+        weights = "(BEZ TEŽINE)"
 
     if type == 'community_size':
-        plt.title("Histogram veličina zajednica")
+        plt.title(detectionAlgorithm + " - histogram veličina zajednica " + weights)
         plt.xlabel("Veličina zajednica")
     elif type == 'isolated_flies':
-        plt.title("Histogram izoliranih mušica")
+        plt.title(detectionAlgorithm + " - histogram izoliranih mušica " + weights)
         plt.xlabel("Broj izoliranih mušica")
     
     plt.ylabel("Broj snapshotova")
