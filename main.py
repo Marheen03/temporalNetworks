@@ -52,18 +52,22 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
     numberOfIsolatedNodes.append(len(utils.find_isolated_nodes(communities)) + isolatedCommunities)
     snapshots += 1
 
+if usingWeights:
+    weights = "(TEŽINA)"
+else:
+    weights = "(BEZ TEŽINE)"
 
 if communityDetection == "girvan_newman":
-    print("GIRVAN-NEWMANOV ALGORITAM")
+    print("GIRVAN-NEWMANOV ALGORITAM " + weights)
 elif communityDetection == "louvain":
-    print("LOUVAINOV ALGORITAM")
+    print("LOUVAINOV ALGORITAM " + weights)
 
-print("Duljina najveće zajednice:", maxCommunitySize)
+print("\nDuljina najveće zajednice:", maxCommunitySize)
 print("Ukupan broj zajednica:", numberOfCommunities)
 print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
 
 print("Ukupan broj izoliranih mušica:", isolatedNodes)
 print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
 
-utils.createHistogram(communitySizes, 'community_size', communityDetection, usingWeights)
-utils.createHistogram(numberOfIsolatedNodes, 'isolated_flies', communityDetection, usingWeights)
+#utils.createHistogram(communitySizes, 'community_size', communityDetection, usingWeights)
+#utils.createHistogram(numberOfIsolatedNodes, 'isolated_flies', communityDetection, usingWeights)
