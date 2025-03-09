@@ -1,12 +1,12 @@
 import utils, networkx as nx
 
 # configuration parameters
-communityDetection = "girvan_newman"
+communityDetection = "louvain"
 usingWeights = False
 
 
-url = 'CsCh_10'
-snapshot_graphs = utils.load_files_from_folder(url, n_sort=True, file_format=".gml")
+snapshots_folder = 'CsCh_30'
+snapshot_graphs = utils.load_files_from_folder(snapshots_folder, n_sort=True, file_format=".gml")
 
 numberOfCommunities = 0
 isolatedNodes = 0
@@ -53,14 +53,19 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
     snapshots += 1
 
 if usingWeights:
-    weights = "(TEŽINA)"
+    weights = "(S TEŽINOM)"
 else:
     weights = "(BEZ TEŽINE)"
 
+if snapshots_folder == 'CsCh_10':
+    snapshot_size = "10"
+elif snapshots_folder == 'CsCh_30':
+    snapshot_size = "30"
+
 if communityDetection == "girvan_newman":
-    print("GIRVAN-NEWMANOV ALGORITAM " + weights)
+    print("GIRVAN-NEWMANOV ALGORITAM " + weights + " - snapshotovi od " + snapshot_size + " sekundi")
 elif communityDetection == "louvain":
-    print("LOUVAINOV ALGORITAM " + weights)
+    print("LOUVAINOV ALGORITAM " + weights + " - snapshotovi od " + snapshot_size + " sekundi")
 
 print("\nDuljina najveće zajednice:", maxCommunitySize)
 print("Ukupan broj zajednica:", numberOfCommunities)
@@ -69,5 +74,5 @@ print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
 print("Ukupan broj izoliranih mušica:", isolatedNodes)
 print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
 
-#utils.createHistogram(communitySizes, 'community_size', communityDetection, usingWeights)
-#utils.createHistogram(numberOfIsolatedNodes, 'isolated_flies', communityDetection, usingWeights)
+utils.createHistogram(communitySizes, 'community_size', communityDetection, usingWeights, snapshots_folder)
+utils.createHistogram(numberOfIsolatedNodes, 'isolated_flies', communityDetection, usingWeights, snapshots_folder)

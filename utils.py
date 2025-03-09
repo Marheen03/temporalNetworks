@@ -102,7 +102,7 @@ def get_community_of_node(communities, numOfFlies=12):
 
 
 # creates histogram displaying community sizes for each snapshot
-def createHistogram(dataset, type, communityDetection, usingWeights):
+def createHistogram(dataset, type, communityDetection, usingWeights, snapshots_folder):
     _, _, bars = plt.hist(dataset, bins=range(1, max(dataset)+2),
                                align="left", edgecolor='black', linewidth=1.2)
     plt.xticks(range(1, max(dataset)+2))
@@ -135,5 +135,10 @@ def createHistogram(dataset, type, communityDetection, usingWeights):
         plt.title(detectionAlgorithm + " - histogram izoliranih mušica " + weights)
         plt.xlabel("Broj izoliranih mušica")
     
-    plt.ylabel("Broj snapshotova")
+    if snapshots_folder == 'CsCh_10':
+        snapshot_size = "10"
+    elif snapshots_folder == 'CsCh_30':
+        snapshot_size = "30"
+
+    plt.ylabel("Broj snapshotova (" + snapshot_size + " sekundi)")
     plt.show()
