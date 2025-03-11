@@ -102,7 +102,7 @@ def get_community_of_node(communities, numOfFlies=12):
 
 
 # creates histogram displaying community sizes for each snapshot
-def createHistogram(dataset, type, communityDetection, usingWeights, snapshots_folder):
+def plotHistogram(dataset, type, communityDetection, usingWeights, snapshots_folder):
     _, _, bars = plt.hist(dataset, bins=range(1, max(dataset)+2),
                                align="left", edgecolor='black', linewidth=1.2)
     plt.xticks(range(1, max(dataset)+2))
@@ -142,3 +142,67 @@ def createHistogram(dataset, type, communityDetection, usingWeights, snapshots_f
 
     plt.ylabel("Broj snapshotova (" + snapshot_size + " sekundi)")
     plt.show()
+
+
+# computes Jaccard similarity between two sets.
+def jaccard_similarity(set1, set2):
+    return len(set1 & set2) / len(set1 | set2)
+
+
+def track_consistent_communities(snapshots, similarity_threshold=0.5):
+    """
+    Assigns consistent community IDs across snapshots based on Jaccard similarity.
+    
+    :param snapshots: List of snapshots (each snapshot is a list of communities).
+    :param similarity_threshold: Jaccard similarity threshold for matching communities.
+    :return: List of snapshots with consistent community IDs.
+    """
+    community_mapping = {}  # Maps snapshot index -> old community ID -> new consistent ID
+    last_assigned_id = 0    # Counter for community IDs
+    
+    for t, communities in enumerate(snapshots):
+        current_mapping = {}  # Mapping for this snapshot
+        community_sets = [set(comm) for comm in communities]  # Convert to sets for comparison
+        
+        if t == 0:
+            # Assign initial IDs in the first snapshot
+            for i, comm in enumerate(community_sets):
+                current_mapping[i] = last_assigned_id
+                last_assigned_id += 1
+        else:
+            # Match communities with previous snapshot
+            prev_mapping = community_mapping[t - 1]
+            prev_communities = [set(comm) for comm in snapshots[t - 1]]
+            
+            used_ids = set()  # Track used IDs to prevent duplicate assignments
+            
+            for i, comm in enumerate(community_sets):
+                best_match = None
+                best_score = 0
+
+                for j, prev_comm in enumerate(prev_communities):
+                    score = jaccard_similarity(comm, prev_comm)
+                    if score > best_score and score >= similarity_threshold:
+                        best_match = j
+                        best_score = score
+
+                if best_match is not None and prev_mapping[best_match] not in used_ids:
+                    current_mapping[i] = prev_mapping[best_match]  # Keep the same ID
+                    used_ids.add(prev_mapping[best_match])
+                else:
+                    # Assign new ID if no good match
+                    current_mapping[i] = last_assigned_id
+                    last_assigned_id += 1
+        
+        community_mapping[t] = current_mapping  # Store mapping for this snapshot
+    
+    # Apply new IDs to snapshots
+    new_snapshots = []
+    for t, communities in enumerate(snapshots):
+        sorted_communities = sorted(
+            [(community_mapping[t][i], comm) for i, comm in enumerate(communities)],
+            key=lambda x: x[0]
+        )
+        new_snapshots.append([comm for _, comm in sorted_communities])
+
+    return new_snapshots

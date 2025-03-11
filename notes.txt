@@ -1,7 +1,7 @@
 - load_files_from_folder
 - svaki se snapshot dijeli u zajednice
 - kod Girvan-Newmanovog algoritma u nekim snapshotovima detektiraju se zajednice od samo jednog čvora
-  (tzv. izolirane zajednice)
+  (tzv. izolirane zajednice) - izuzete su kod računanja broja zajednica
 
 - uporabom Louvainovog algoritma broj detektiranih zajednica varira od 366 do 372 s težinama
   te varira od 362 do 365 bez težina
@@ -15,19 +15,19 @@
 GIRVAN-NEWMANOV ALGORITAM (s težinama)
 
 Duljina najveće zajednice: 11
-Ukupan broj zajednica: 310
-Prosječan broj zajednica: 2.5833333333333335
-Ukupan broj izoliranih mušica: 132
-Prosječan broj izoliranih mušica: 1.1
+Ukupan broj zajednica: 286
+Prosječan broj zajednica: 2.3833333333333333
+Ukupan broj izoliranih mušica: 156
+Prosječan broj izoliranih mušica: 1.3
 
 
 GIRVAN-NEWMANOV ALGORITAM (bez težina)
 
 Duljina najveće zajednice: 11
-Ukupan broj zajednica: 310
-Prosječan broj zajednica: 2.5833333333333335
-Ukupan broj izoliranih mušica: 143
-Prosječan broj izoliranih mušica: 1.1916666666666667
+Ukupan broj zajednica: 275
+Prosječan broj zajednica: 2.2916666666666665
+Ukupan broj izoliranih mušica: 178
+Prosječan broj izoliranih mušica: 1.4833333333333334
 
 
 LOUVAINOV ALGORITAM (s težinama)
@@ -55,19 +55,19 @@ Prosječan broj izoliranih mušica: 0.9
 GIRVAN-NEWMANOV ALGORITAM (s težinama)
 
 Duljina najveće zajednice: 11
-Ukupan broj zajednica: 80
-Prosječan broj zajednica: 2.0
-Ukupan broj izoliranih mušica: 24
-Prosječan broj izoliranih mušica: 0.6
+Ukupan broj zajednica: 57
+Prosječan broj zajednica: 1.425
+Ukupan broj izoliranih mušica: 47
+Prosječan broj izoliranih mušica: 1.175
 
 
 GIRVAN-NEWMANOV ALGORITAM (bez težina)
 
 Duljina najveće zajednice: 11
-Ukupan broj zajednica: 80
-Prosječan broj zajednica: 2.0
-Ukupan broj izoliranih mušica: 32
-Prosječan broj izoliranih mušica: 0.8
+Ukupan broj zajednica: 49
+Prosječan broj zajednica: 1.225
+Ukupan broj izoliranih mušica: 63
+Prosječan broj izoliranih mušica: 1.575
 
 
 LOUVAINOV ALGORITAM (s težinama)
