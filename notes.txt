@@ -2,6 +2,7 @@
 - svaki se snapshot dijeli u zajednice
 - kod Girvan-Newmanovog algoritma u nekim snapshotovima detektiraju se zajednice od samo jednog čvora
   (tzv. izolirane zajednice) - izuzete su kod računanja broja zajednica
+- bilo je potrebno osigurati da slične zajednice imaju konzistenti ID kroz sve snapshotove
 
 - uporabom Louvainovog algoritma broj detektiranih zajednica varira od 366 do 372 s težinama
   te varira od 362 do 365 bez težina

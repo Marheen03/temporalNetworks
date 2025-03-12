@@ -66,23 +66,25 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
     numberOfIsolatedNodes.append(len(utils.find_isolated_nodes(communities)) + isolatedCommunities)
     snapshots += 1
 
-consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
 
+consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
+communitiesDict = []
 # Print results
 for i, communities in enumerate(consistent_snapshots):
     communityOfNode = utils.get_community_of_node(communities)
+    communitiesDict.append(communityOfNode)
     
     #print("{}. snapshot:".format(i+1), communityOfNode)
-    print(f"Snapshot {i+1}: {communities}")
+    #print(f"Snapshot {i+1}: {communities}")
+utils.plotColorMap(communitiesDict)
 
-"""
+
 print("Duljina najveće zajednice:", maxCommunitySize)
 print("Ukupan broj zajednica:", numberOfCommunities)
 print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
 
 print("Ukupan broj izoliranih mušica:", isolatedNodes)
 print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
-"""
 
 #utils.plotHistogram(communitySizes, 'community_size', communityDetection, usingWeights, snapshots_folder)
 #utils.plotHistogram(numberOfIsolatedNodes, 'isolated_flies', communityDetection, usingWeights, snapshots_folder)

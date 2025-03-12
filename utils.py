@@ -1,4 +1,8 @@
-import os, sys, re, networkx as nx, matplotlib.pyplot as plt
+import os, sys, re
+import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import numpy as np
 
 # removes edge with the highest centrality based on weight
 def most_central_edge(G):
@@ -80,7 +84,7 @@ def get_community_of_node(communities, numOfFlies=12):
     numOfFlies (int): Total number of observed flies.
 
     Returns:
-    dict: flies as keys and community ID as values (-1 if node isn't part of community).
+    dict: flies as keys and community ID as values (0 if node isn't part of community).
     """
 
     allFlies = []
@@ -90,7 +94,7 @@ def get_community_of_node(communities, numOfFlies=12):
 
     communityOfNode = {}
     for fly in allFlies:
-        communityOfNode[fly] = -1
+        communityOfNode[fly] = 0
         
         for i, community in enumerate(communities):
             # check if fly is within certain community
@@ -206,3 +210,36 @@ def track_consistent_communities(snapshots, similarity_threshold=0.5):
         new_snapshots.append([comm for _, comm in sorted_communities])
 
     return new_snapshots
+
+
+def plotColorMap(communitiesDict):
+    # Get unique fly names (assuming they are the same across snapshots)
+    flies = list(communitiesDict[0].keys())
+
+    # Convert snapshots into a 2D NumPy array (shape: 12 flies x 120 snapshots)
+    data_matrix = np.array([[snapshot[fly] for snapshot in communitiesDict] for fly in flies])
+
+    # Create the heatmap
+    plt.figure(figsize=(12, 6))
+    cmap = plt.get_cmap("tab10", np.max(data_matrix) + 2)  # Adjust colors to match community IDs
+    plt.imshow(data_matrix, aspect="auto", cmap=cmap)
+
+    # Labels and formatting
+    ticksX = np.arange(0, len(communitiesDict)+1, step=10)
+    ticksX[0] += 1
+    plt.xticks(ticks=ticksX, labels=ticksX)
+    plt.yticks(ticks=np.arange(len(flies)), labels=flies)
+
+    plt.xlabel("Snapshotovi")
+    plt.ylabel("Vinske mušice")
+    plt.title("Pripadnost mušica zajednicama kroz vrijeme")
+
+    # Modify the label for Community 0
+    community_ids = np.unique(data_matrix)  # Unique community IDs
+    labels = [f"Izolirana mušica" if i == 0 else f"{i}. zajednica" for i in community_ids]
+    patches = [mpatches.Patch(color=cmap(i), label=labels[idx]) for idx, i in enumerate(community_ids)]
+
+    # Create a legend mapping community IDs to colors
+    plt.legend(handles=patches, title="Zajednice", bbox_to_anchor=(1, 1), loc="upper left")
+    plt.tight_layout(rect=[0.01, 0, 0.97, 1])  # Adjust the paddings
+    plt.show()
