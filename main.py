@@ -76,7 +76,7 @@ for i, communities in enumerate(consistent_snapshots):
     
     #print("{}. snapshot:".format(i+1), communityOfNode)
     #print(f"Snapshot {i+1}: {communities}")
-utils.plotColorMap(communitiesDict)
+utils.plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_folder)
 
 
 print("Duljina najveće zajednice:", maxCommunitySize)

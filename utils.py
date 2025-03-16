@@ -128,7 +128,7 @@ def plotHistogram(dataset, type, communityDetection, usingWeights, snapshots_fol
         detectionAlgorithm = "LOUVAIN"
     
     if usingWeights:
-        weights = "(TEŽINA)"
+        weights = "(S TEŽINOM)"
     else:
         weights = "(BEZ TEŽINE)"
 
@@ -212,7 +212,7 @@ def track_consistent_communities(snapshots, similarity_threshold=0.5):
     return new_snapshots
 
 
-def plotColorMap(communitiesDict):
+def plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_folder):
     # Get unique fly names (assuming they are the same across snapshots)
     flies = list(communitiesDict[0].keys())
 
@@ -230,9 +230,24 @@ def plotColorMap(communitiesDict):
     plt.xticks(ticks=ticksX, labels=ticksX)
     plt.yticks(ticks=np.arange(len(flies)), labels=flies)
 
-    plt.xlabel("Snapshotovi")
+    if snapshots_folder == 'CsCh_10':
+        snapshot_size = "10"
+    elif snapshots_folder == 'CsCh_30':
+        snapshot_size = "30"
+    
+    if communityDetection == "girvan_newman":
+        detectionAlgorithm = "GN"
+    elif communityDetection == "louvain":
+        detectionAlgorithm = "LOUVAIN"
+    
+    if usingWeights:
+        weights = "(S TEŽINOM)"
+    else:
+        weights = "(BEZ TEŽINE)"
+
+    plt.xlabel("Snapshotovi (" + snapshot_size + " sekundi)")
     plt.ylabel("Vinske mušice")
-    plt.title("Pripadnost mušica zajednicama kroz vrijeme")
+    plt.title(detectionAlgorithm + " - Pripadnost mušica zajednicama kroz vrijeme " + weights)
 
     # Modify the label for Community 0
     community_ids = np.unique(data_matrix)  # Unique community IDs
