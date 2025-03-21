@@ -1,8 +1,16 @@
 import os, sys, re
 import networkx as nx
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-import numpy as np
+
+
+# returns array containing all flies
+def getAllFlies(numOfFlies):
+    allFlies = []
+    for i in range(numOfFlies):
+        flyString = 'fly' + str(i+1)
+        allFlies.append(flyString)
+    
+    return allFlies
+
 
 # removes edge with the highest centrality based on weight
 def most_central_edge(G):
@@ -49,22 +57,19 @@ def load_files_from_folder(path, file_format=".csv", n_sort=False):
     return files_dict
 
 
-def find_isolated_nodes(communities, numOfFlies=12):
+def find_isolated_nodes(communities, allFlies):
     """
     Returns isolated nodes (flies) from given snapshot.
 
     Parameters:
     communities (list): List of communities represented as sets.
-    numOfFlies (int): Total number of observed flies.
+    allFlies (array): Array of fly names.
 
     Returns:
     set: Set containing isolated nodes (flies).
     """
 
-    allFlies = set()
-    for i in range(numOfFlies):
-        fly = 'fly' + str(i+1)
-        allFlies.add(fly)
+    allFlies = set(allFlies)
 
     currentCommunity = set()
     for community in communities:
@@ -75,23 +80,17 @@ def find_isolated_nodes(communities, numOfFlies=12):
     return isolatedNodes
 
 
-def get_community_of_node(communities, numOfFlies=12):
+def get_community_of_node(communities, allFlies):
     """
     Returns community ID in which given node is part of.
 
     Parameters:
     communities (list): List of communities represented as sets.
-    numOfFlies (int): Total number of observed flies.
+    allFlies (array): Array of fly names.
 
     Returns:
     dict: flies as keys and community ID as values (0 if node isn't part of community).
     """
-
-    allFlies = []
-    for i in range(numOfFlies):
-        fly = 'fly' + str(i+1)
-        allFlies.append(fly)
-
     communityOfNode = {}
     for fly in allFlies:
         communityOfNode[fly] = 0
@@ -105,49 +104,6 @@ def get_community_of_node(communities, numOfFlies=12):
     return communityOfNode
 
 
-# creates histogram displaying community sizes for each snapshot
-def plotHistogram(dataset, type, communityDetection, usingWeights, snapshots_folder):
-    _, _, bars = plt.hist(dataset, bins=range(1, max(dataset)+2),
-                               align="left", edgecolor='black', linewidth=1.2)
-    plt.xticks(range(1, max(dataset)+2))
-    
-    # extract heights of the bars
-    heights = [bar.get_height() for bar in bars]
-    total = sum(heights)  # total count
-    
-    # add labels with both count and percentage
-    for bar, height in zip(bars, heights):
-        if height > 0:
-            plt.text(bar.get_x() + bar.get_width() / 2, height, 
-                    f'{int(height)} ({(height / total * 100):.1f}%)', 
-                    ha='center', va='bottom')
-
-    if communityDetection == "girvan_newman":
-        detectionAlgorithm = "GN"
-    elif communityDetection == "louvain":
-        detectionAlgorithm = "LOUVAIN"
-    
-    if usingWeights:
-        weights = "(S TEŽINOM)"
-    else:
-        weights = "(BEZ TEŽINE)"
-
-    if type == 'community_size':
-        plt.title(detectionAlgorithm + " - histogram veličina zajednica " + weights)
-        plt.xlabel("Veličina zajednica")
-    elif type == 'isolated_flies':
-        plt.title(detectionAlgorithm + " - histogram izoliranih mušica " + weights)
-        plt.xlabel("Broj izoliranih mušica")
-    
-    if snapshots_folder == 'CsCh_10':
-        snapshot_size = "10"
-    elif snapshots_folder == 'CsCh_30':
-        snapshot_size = "30"
-
-    plt.ylabel("Broj snapshotova (" + snapshot_size + " sekundi)")
-    plt.show()
-
-
 # computes Jaccard similarity between two sets.
 def jaccard_similarity(set1, set2):
     return len(set1 & set2) / len(set1 | set2)
@@ -157,9 +113,12 @@ def track_consistent_communities(snapshots, similarity_threshold=0.5):
     """
     Assigns consistent community IDs across snapshots based on Jaccard similarity.
     
-    :param snapshots: List of snapshots (each snapshot is a list of communities).
-    :param similarity_threshold: Jaccard similarity threshold for matching communities.
-    :return: List of snapshots with consistent community IDs.
+    Parameters:
+    snapshots (array): List of snapshots (each snapshot is a list of communities).
+    similarity_threshold (float): Jaccard similarity threshold for matching communities.
+    
+    Returns:
+    array: List of snapshots with consistent community IDs.
     """
     community_mapping = {}  # Maps snapshot index -> old community ID -> new consistent ID
     last_assigned_id = 0    # Counter for community IDs
@@ -212,49 +171,27 @@ def track_consistent_communities(snapshots, similarity_threshold=0.5):
     return new_snapshots
 
 
-def plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_folder):
-    # Get unique fly names (assuming they are the same across snapshots)
-    flies = list(communitiesDict[0].keys())
-
-    # Convert snapshots into a 2D NumPy array (shape: 12 flies x 120 snapshots)
-    data_matrix = np.array([[snapshot[fly] for snapshot in communitiesDict] for fly in flies])
-
-    # Create the heatmap
-    plt.figure(figsize=(12, 6))
-    cmap = plt.get_cmap("tab10", np.max(data_matrix) + 2)  # Adjust colors to match community IDs
-    plt.imshow(data_matrix, aspect="auto", cmap=cmap)
-
-    # Labels and formatting
-    ticksX = np.arange(0, len(communitiesDict)+1, step=10)
-    ticksX[0] += 1
-    plt.xticks(ticks=ticksX, labels=ticksX)
-    plt.yticks(ticks=np.arange(len(flies)), labels=flies)
-
-    if snapshots_folder == 'CsCh_10':
-        snapshot_size = "10"
-    elif snapshots_folder == 'CsCh_30':
-        snapshot_size = "30"
+def shared_communites(fly, communitiesDict, allFlies):
+    """
+    Counts occurences when chosen fly was in identical community with all flies
+    through all snapshots.
     
-    if communityDetection == "girvan_newman":
-        detectionAlgorithm = "GN"
-    elif communityDetection == "louvain":
-        detectionAlgorithm = "LOUVAIN"
+    Parameters:
+    fly (string): List of snapshots (each snapshot is a list of communities).
+    communitiesDict (array): Array of community distributions for each snapshot.
+    allFlies (array): Array containing names of all flies.
     
-    if usingWeights:
-        weights = "(S TEŽINOM)"
-    else:
-        weights = "(BEZ TEŽINE)"
+    Returns:
+    dict: Flies as keys and number of occurences in the same community as values.
+    """
+    allFliesCopy = [flyCopy for flyCopy in allFlies if flyCopy != fly]
+    mutual_flies = {key : 0 for key in allFliesCopy}
 
-    plt.xlabel("Snapshotovi (" + snapshot_size + " sekundi)")
-    plt.ylabel("Vinske mušice")
-    plt.title(detectionAlgorithm + " - Pripadnost mušica zajednicama kroz vrijeme " + weights)
+    for i in range(len(communitiesDict)):
+        communityID = communitiesDict[i][fly]
 
-    # Modify the label for Community 0
-    community_ids = np.unique(data_matrix)  # Unique community IDs
-    labels = [f"Izolirana mušica" if i == 0 else f"{i}. zajednica" for i in community_ids]
-    patches = [mpatches.Patch(color=cmap(i), label=labels[idx]) for idx, i in enumerate(community_ids)]
-
-    # Create a legend mapping community IDs to colors
-    plt.legend(handles=patches, title="Zajednice", bbox_to_anchor=(1, 1), loc="upper left")
-    plt.tight_layout(rect=[0.01, 0, 0.97, 1])  # Adjust the paddings
-    plt.show()
+        for flyCopy in allFliesCopy:
+            if communitiesDict[i][flyCopy] == communityID:
+                mutual_flies[flyCopy] += 1
+    
+    return mutual_flies
