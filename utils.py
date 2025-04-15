@@ -21,7 +21,9 @@ def getLabels(snapshots_folder, communityDetection, usingWeights):
     else:
         weights = "(BEZ TEŽINE)"
 
-    return snapshot_size, detectionAlgorithm, weights
+    return {"snapshotSize": snapshot_size,
+            "detectionAlgorithm": detectionAlgorithm,
+            "weights": weights}
 
 
 # returns array containing all flies

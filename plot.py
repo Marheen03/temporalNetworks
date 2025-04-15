@@ -22,13 +22,13 @@ def plotHistogram(dataset, type, labels):
                     ha='center', va='bottom')
 
     if type == 'community_size':
-        plt.title(labels[1] + " - histogram veličina zajednica " + labels[2])
+        plt.title(labels["detectionAlgorithm"] + " - histogram veličina zajednica " + labels["weights"])
         plt.xlabel("Veličina zajednica")
     elif type == 'isolated_flies':
-        plt.title(labels[1] + " - histogram izoliranih mušica " + labels[2])
+        plt.title(labels["detectionAlgorithm"] + " - histogram izoliranih mušica " + labels["weights"])
         plt.xlabel("Broj izoliranih mušica")
 
-    plt.ylabel("Broj snapshotova (" + labels[0] + " sekundi)")
+    plt.ylabel("Broj snapshotova (" + labels["snapshotSize"] + " sekundi)")
     plt.show()
 
 
@@ -51,9 +51,9 @@ def plotColorMap(communitiesDict, labels):
     plt.xticks(ticks=ticksX, labels=ticksX)
     plt.yticks(ticks=np.arange(len(flies)), labels=flies)
 
-    plt.xlabel("Snapshotovi (" + labels[0] + " sekundi)")
+    plt.xlabel("Snapshotovi (" + labels["snapshotSize"] + " sekundi)")
     plt.ylabel("Vinske mušice")
-    plt.title(labels[1] + " - Pripadnost mušica zajednicama kroz vrijeme " + labels[2])
+    plt.title(labels["detectionAlgorithm"] + " - Pripadnost mušica zajednicama kroz vrijeme " + labels["weights"])
 
     # modify the label for Community 0
     community_ids = np.unique(data_matrix)  # Unique community IDs
@@ -69,9 +69,9 @@ def plotColorMap(communitiesDict, labels):
 # create bar chart for flies in identical communities
 def plotBarChart(fliesInTop3, labels):
     plt.bar(fliesInTop3.keys(), fliesInTop3.values())
-    plt.title(labels[1] + " - Najčešće mušice u istoj zajednici " + labels[2])
+    plt.title(labels["detectionAlgorithm"] + " - Najčešće mušice u istoj zajednici " + labels["weights"])
     
-    plt.xlabel('Mušice (snapshot od ' + labels[0] +  ' sekundi)')
+    plt.xlabel('Mušice (snapshot od ' + labels["snapshotSize"] +  ' sekundi)')
     plt.ylabel('Broj nalaska u top 3')
     plt.show()
 
@@ -86,7 +86,7 @@ def plotHeatMap(df, labels, negative):
     _, ax = plt.subplots(figsize=(10,5))
     sb.heatmap(df, vmin=num, vmax=1, annot=True, linewidths=.5, ax=ax)
     
-    plt.title(labels[1] + " - Preferencije zajedničkih mušica " + labels[2] + ", " + labels[0] + " sekundi")
+    plt.title(labels["detectionAlgorithm"] + " - Preferencije zajedničkih mušica " + labels["weights"] + ", " + labels["snapshotSize"] + " sekundi")
     plt.xlabel('Mušice')
     plt.ylabel('Mušice')
     plt.show()

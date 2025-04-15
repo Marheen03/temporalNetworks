@@ -4,15 +4,15 @@ import utils, plot, networkx as nx
 numOfFlies = 12
 communityDetection = "louvain"
 usingWeights = True
-snapshots_folder = 'CsCh_30'
+snapshots_folder = 'CsCh_10'
 
 
 labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights)
 
 if communityDetection == "girvan_newman":
-    print("GIRVAN-NEWMANOV ALGORITAM " + labels[2] + " - snapshotovi od " + labels[0] + " sekundi\n")
+    print("GIRVAN-NEWMANOV ALGORITAM " + labels["weights"] + " - snapshotovi od " + labels["snapshotSize"] + " sekundi\n")
 elif communityDetection == "louvain":
-    print("LOUVAINOV ALGORITAM " + labels[2] + " - snapshotovi od " + labels[0] + " sekundi\n")
+    print("LOUVAINOV ALGORITAM " + labels["weights"] + " - snapshotovi od " + labels["snapshotSize"] + " sekundi\n")
 
 
 snapshot_graphs = utils.load_files_from_folder(snapshots_folder, n_sort=True, file_format=".gml")
