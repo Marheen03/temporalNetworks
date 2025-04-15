@@ -4,23 +4,15 @@ import utils, plot, networkx as nx
 numOfFlies = 12
 communityDetection = "louvain"
 usingWeights = True
-snapshots_folder = 'CsCh_10'
+snapshots_folder = 'CsCh_30'
 
 
-if usingWeights:
-    weights = "(S TEŽINOM)"
-else:
-    weights = "(BEZ TEŽINE)"
-
-if snapshots_folder == 'CsCh_10':
-    snapshot_size = "10"
-elif snapshots_folder == 'CsCh_30':
-    snapshot_size = "30"
+labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights)
 
 if communityDetection == "girvan_newman":
-    print("GIRVAN-NEWMANOV ALGORITAM " + weights + " - snapshotovi od " + snapshot_size + " sekundi\n")
+    print("GIRVAN-NEWMANOV ALGORITAM " + labels[2] + " - snapshotovi od " + labels[0] + " sekundi\n")
 elif communityDetection == "louvain":
-    print("LOUVAINOV ALGORITAM " + weights + " - snapshotovi od " + snapshot_size + " sekundi\n")
+    print("LOUVAINOV ALGORITAM " + labels[2] + " - snapshotovi od " + labels[0] + " sekundi\n")
 
 
 snapshot_graphs = utils.load_files_from_folder(snapshots_folder, n_sort=True, file_format=".gml")
@@ -81,10 +73,10 @@ for i, communities in enumerate(consistent_snapshots):
     
     #print("{}. snapshot:".format(i+1), communityOfNode)
     #print(f"Snapshot {i+1}: {communities}")
-#plot.plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_folder)
+#plot.plotColorMap(communitiesDict, labels)
 
 df = utils.getHeatMapData(communitiesDict, allFlies, False)
-plot.plotHeatMap(df, communityDetection, usingWeights, snapshots_folder)
+plot.plotHeatMap(df, labels, False)
 
 """
 fliesInTop3 = {key : 0 for key in allFlies}
@@ -100,7 +92,7 @@ for fly in allFlies:
         counter += 1
         if counter == 3:
             break
-plot.plotBarChart(fliesInTop3, communityDetection, usingWeights, snapshots_folder) 
+plot.plotBarChart(fliesInTop3, labels) 
 """
 
 """
@@ -112,11 +104,5 @@ print("Ukupan broj izoliranih mušica:", isolatedNodes)
 print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
 """
 
-
-"""DELETE!!!!!!
-sns.heatmap(df, annot=True)
-matplotlib.pyplot.show()
-"""
-
-#plot.plotHistogram(communitySizes, 'community_size', communityDetection, usingWeights, snapshots_folder)
-#plot.plotHistogram(numberOfIsolatedNodes, 'isolated_flies', communityDetection, usingWeights, snapshots_folder)
+#plot.plotHistogram(communitySizes, 'community_size', labels)
+#plot.plotHistogram(numberOfIsolatedNodes, 'isolated_flies', labels)

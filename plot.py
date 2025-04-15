@@ -5,7 +5,7 @@ import seaborn as sb
 
 
 # creates histogram displaying community sizes for each snapshot
-def plotHistogram(dataset, type, communityDetection, usingWeights, snapshots_folder):
+def plotHistogram(dataset, type, labels):
     _, _, bars = plt.hist(dataset, bins=range(1, max(dataset)+2),
                                align="left", edgecolor='black', linewidth=1.2)
     plt.xticks(range(1, max(dataset)+2))
@@ -21,34 +21,19 @@ def plotHistogram(dataset, type, communityDetection, usingWeights, snapshots_fol
                     f'{int(height)} ({(height / total * 100):.1f}%)', 
                     ha='center', va='bottom')
 
-    if communityDetection == "girvan_newman":
-        detectionAlgorithm = "GN"
-    elif communityDetection == "louvain":
-        detectionAlgorithm = "LOUVAIN"
-    
-    if usingWeights:
-        weights = "(S TEŽINOM)"
-    else:
-        weights = "(BEZ TEŽINE)"
-
     if type == 'community_size':
-        plt.title(detectionAlgorithm + " - histogram veličina zajednica " + weights)
+        plt.title(labels[1] + " - histogram veličina zajednica " + labels[2])
         plt.xlabel("Veličina zajednica")
     elif type == 'isolated_flies':
-        plt.title(detectionAlgorithm + " - histogram izoliranih mušica " + weights)
+        plt.title(labels[1] + " - histogram izoliranih mušica " + labels[2])
         plt.xlabel("Broj izoliranih mušica")
-    
-    if snapshots_folder == 'CsCh_10':
-        snapshot_size = "10"
-    elif snapshots_folder == 'CsCh_30':
-        snapshot_size = "30"
 
-    plt.ylabel("Broj snapshotova (" + snapshot_size + " sekundi)")
+    plt.ylabel("Broj snapshotova (" + labels[0] + " sekundi)")
     plt.show()
 
 
 # create colormap for flies' community distribution
-def plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_folder):
+def plotColorMap(communitiesDict, labels):
     # get unique fly names
     flies = list(communitiesDict[0].keys())
 
@@ -66,24 +51,9 @@ def plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_fo
     plt.xticks(ticks=ticksX, labels=ticksX)
     plt.yticks(ticks=np.arange(len(flies)), labels=flies)
 
-    if snapshots_folder == 'CsCh_10':
-        snapshot_size = "10"
-    elif snapshots_folder == 'CsCh_30':
-        snapshot_size = "30"
-    
-    if communityDetection == "girvan_newman":
-        detectionAlgorithm = "GN"
-    elif communityDetection == "louvain":
-        detectionAlgorithm = "LOUVAIN"
-    
-    if usingWeights:
-        weights = "(S TEŽINOM)"
-    else:
-        weights = "(BEZ TEŽINE)"
-
-    plt.xlabel("Snapshotovi (" + snapshot_size + " sekundi)")
+    plt.xlabel("Snapshotovi (" + labels[0] + " sekundi)")
     plt.ylabel("Vinske mušice")
-    plt.title(detectionAlgorithm + " - Pripadnost mušica zajednicama kroz vrijeme " + weights)
+    plt.title(labels[1] + " - Pripadnost mušica zajednicama kroz vrijeme " + labels[2])
 
     # modify the label for Community 0
     community_ids = np.unique(data_matrix)  # Unique community IDs
@@ -97,50 +67,26 @@ def plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_fo
 
 
 # create bar chart for flies in identical communities
-def plotBarChart(fliesInTop3, communityDetection, usingWeights, snapshots_folder):
+def plotBarChart(fliesInTop3, labels):
     plt.bar(fliesInTop3.keys(), fliesInTop3.values())
-    if snapshots_folder == 'CsCh_10':
-        snapshot_size = "10"
-    elif snapshots_folder == 'CsCh_30':
-        snapshot_size = "30"
+    plt.title(labels[1] + " - Najčešće mušice u istoj zajednici " + labels[2])
     
-    if communityDetection == "girvan_newman":
-        detectionAlgorithm = "GN"
-    elif communityDetection == "louvain":
-        detectionAlgorithm = "LOUVAIN"
-    
-    if usingWeights:
-        weights = "(S TEŽINOM)"
-    else:
-        weights = "(BEZ TEŽINE)"
-    
-    plt.title(detectionAlgorithm + " - Najčešće mušice u istoj zajednici " + weights)
-    plt.xlabel('Mušice (snapshot od ' + snapshot_size +  ' sekundi)')
+    plt.xlabel('Mušice (snapshot od ' + labels[0] +  ' sekundi)')
     plt.ylabel('Broj nalaska u top 3')
     plt.show()
 
 
 # create heatmap for flies' preference
-def plotHeatMap(df, communityDetection, usingWeights, snapshots_folder):
-    if snapshots_folder == 'CsCh_10':
-        snapshot_size = "10"
-    elif snapshots_folder == 'CsCh_30':
-        snapshot_size = "30"
-    
-    if communityDetection == "girvan_newman":
-        detectionAlgorithm = "GN"
-    elif communityDetection == "louvain":
-        detectionAlgorithm = "LOUVAIN"
-    
-    if usingWeights:
-        weights = "(S TEŽINOM)"
+def plotHeatMap(df, labels, negative):
+    if negative:
+        num = -1
     else:
-        weights = "(BEZ TEŽINE)"
+        num = 0
     
     _, ax = plt.subplots(figsize=(10,5))
-    sb.heatmap(df, annot=True, linewidths=.5, ax=ax)
+    sb.heatmap(df, vmin=num, vmax=1, annot=True, linewidths=.5, ax=ax)
     
-    plt.title(detectionAlgorithm + " - Preferencije zajedničkih mušica " + weights)
-    plt.xlabel('Mušice (snapshot od ' + snapshot_size +  ' sekundi)')
-    plt.ylabel('Mušice (snapshot od ' + snapshot_size +  ' sekundi)')
+    plt.title(labels[1] + " - Preferencije zajedničkih mušica " + labels[2] + ", " + labels[0] + " sekundi")
+    plt.xlabel('Mušice')
+    plt.ylabel('Mušice')
     plt.show()

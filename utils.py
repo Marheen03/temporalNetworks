@@ -4,6 +4,26 @@ import numpy as np
 import pandas as pd
 
 
+# returns appropriate labels for plots
+def getLabels(snapshots_folder, communityDetection, usingWeights):
+    if snapshots_folder == 'CsCh_10':
+        snapshot_size = "10"
+    elif snapshots_folder == 'CsCh_30':
+        snapshot_size = "30"
+    
+    if communityDetection == "girvan_newman":
+        detectionAlgorithm = "GN"
+    elif communityDetection == "louvain":
+        detectionAlgorithm = "LOUVAIN"
+    
+    if usingWeights:
+        weights = "(S TEŽINOM)"
+    else:
+        weights = "(BEZ TEŽINE)"
+
+    return snapshot_size, detectionAlgorithm, weights
+
+
 # returns array containing all flies
 def getAllFlies(numOfFlies):
     allFlies = []
