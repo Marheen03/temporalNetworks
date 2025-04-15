@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
+import seaborn as sb
 
 
 # creates histogram displaying community sizes for each snapshot
@@ -54,7 +55,7 @@ def plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_fo
     # convert snapshots into a 2D NumPy array (shape: 12 flies x 120 snapshots)
     data_matrix = np.array([[snapshot[fly] for snapshot in communitiesDict] for fly in flies])
 
-    # create the heatmap
+    # create the colormap
     plt.figure(figsize=(12, 6))
     cmap = plt.get_cmap("tab10", np.max(data_matrix) + 2)  # adjust colors to match community IDs
     plt.imshow(data_matrix, aspect="auto", cmap=cmap)
@@ -116,4 +117,30 @@ def plotBarChart(fliesInTop3, communityDetection, usingWeights, snapshots_folder
     plt.title(detectionAlgorithm + " - Najčešće mušice u istoj zajednici " + weights)
     plt.xlabel('Mušice (snapshot od ' + snapshot_size +  ' sekundi)')
     plt.ylabel('Broj nalaska u top 3')
+    plt.show()
+
+
+# create heatmap for flies' preference
+def plotHeatMap(df, communityDetection, usingWeights, snapshots_folder):
+    if snapshots_folder == 'CsCh_10':
+        snapshot_size = "10"
+    elif snapshots_folder == 'CsCh_30':
+        snapshot_size = "30"
+    
+    if communityDetection == "girvan_newman":
+        detectionAlgorithm = "GN"
+    elif communityDetection == "louvain":
+        detectionAlgorithm = "LOUVAIN"
+    
+    if usingWeights:
+        weights = "(S TEŽINOM)"
+    else:
+        weights = "(BEZ TEŽINE)"
+    
+    _, ax = plt.subplots(figsize=(10,5))
+    sb.heatmap(df, annot=True, linewidths=.5, ax=ax)
+    
+    plt.title(detectionAlgorithm + " - Preferencije zajedničkih mušica " + weights)
+    plt.xlabel('Mušice (snapshot od ' + snapshot_size +  ' sekundi)')
+    plt.ylabel('Mušice (snapshot od ' + snapshot_size +  ' sekundi)')
     plt.show()

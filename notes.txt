@@ -9,6 +9,9 @@
 - uporabom Louvainovog algoritma broj detektiranih zajednica varira od 113 do 117 s težinama
   te varira od 99 do 106 bez težina
 
+Uporabom 'seeda' broj detektiranih zajednica ostaje isti
+
+Graf je usmjeren
 
 
 ============== SNAPSHOTOVI OD 10 SEKUNDI =================
@@ -34,8 +37,8 @@ Prosječan broj izoliranih mušica: 1.4833333333333334
 LOUVAINOV ALGORITAM (s težinama)
 
 Duljina najveće zajednice: 7
-Ukupan broj zajednica: 369
-Prosječan broj zajednica: 3.075
+Ukupan broj zajednica: 367
+Prosječan broj zajednica: 3.058333333333333
 Ukupan broj izoliranih mušica: 108
 Prosječan broj izoliranih mušica: 0.9
 
@@ -43,8 +46,8 @@ Prosječan broj izoliranih mušica: 0.9
 LOUVAINOV ALGORITAM (bez težina)
 
 Duljina najveće zajednice: 8
-Ukupan broj zajednica: 364
-Prosječan broj zajednica: 3.033333333333333
+Ukupan broj zajednica: 366
+Prosječan broj zajednica: 3.05
 Ukupan broj izoliranih mušica: 108
 Prosječan broj izoliranih mušica: 0.9
 
@@ -82,8 +85,8 @@ Prosječan broj izoliranih mušica: 0.025
 
 LOUVAINOV ALGORITAM (bez težina)
 
-Duljina najveće zajednice: 8
-Ukupan broj zajednica: 104
-Prosječan broj zajednica: 2.6
+Duljina najveće zajednice: 9
+Ukupan broj zajednica: 100
+Prosječan broj zajednica: 2.5
 Ukupan broj izoliranih mušica: 1
 Prosječan broj izoliranih mušica: 0.025

@@ -2,7 +2,7 @@ import utils, plot, networkx as nx
 
 # configuration parameters
 numOfFlies = 12
-communityDetection = "girvan_newman"
+communityDetection = "louvain"
 usingWeights = True
 snapshots_folder = 'CsCh_10'
 
@@ -37,6 +37,7 @@ snapshotsCommunities = []
 # for each snapshot
 for i, graph_path in enumerate(snapshot_graphs.values()):
     G = nx.read_gml(graph_path)
+    
     if communityDetection == "girvan_newman":
         if usingWeights:
             communitiesIterator = nx.community.girvan_newman(G, utils.most_central_edge)
@@ -51,9 +52,9 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
 
     elif communityDetection == "louvain":
         if usingWeights:
-            communities = nx.community.louvain_communities(G, weight="count")
+            communities = nx.community.louvain_communities(G, weight="count", seed=100)
         else:
-            communities = nx.community.louvain_communities(G)
+            communities = nx.community.louvain_communities(G, seed=100)
         isolatedCommunities = 0
 
     # finding the largest community
@@ -74,7 +75,6 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
 
 consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
 communitiesDict = []
-# Print results
 for i, communities in enumerate(consistent_snapshots):
     communityOfNode = utils.get_community_of_node(communities, allFlies)
     communitiesDict.append(communityOfNode)
@@ -83,7 +83,10 @@ for i, communities in enumerate(consistent_snapshots):
     #print(f"Snapshot {i+1}: {communities}")
 #plot.plotColorMap(communitiesDict, communityDetection, usingWeights, snapshots_folder)
 
+df = utils.getHeatMapData(communitiesDict, allFlies, False)
+plot.plotHeatMap(df, communityDetection, usingWeights, snapshots_folder)
 
+"""
 fliesInTop3 = {key : 0 for key in allFlies}
 for fly in allFlies:
     sharedCommunities = utils.shared_communites(fly, communitiesDict, allFlies)
@@ -98,6 +101,7 @@ for fly in allFlies:
         if counter == 3:
             break
 plot.plotBarChart(fliesInTop3, communityDetection, usingWeights, snapshots_folder) 
+"""
 
 """
 print("Duljina najveće zajednice:", maxCommunitySize)
@@ -106,6 +110,12 @@ print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
 
 print("Ukupan broj izoliranih mušica:", isolatedNodes)
 print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
+"""
+
+
+"""DELETE!!!!!!
+sns.heatmap(df, annot=True)
+matplotlib.pyplot.show()
 """
 
 #plot.plotHistogram(communitySizes, 'community_size', communityDetection, usingWeights, snapshots_folder)

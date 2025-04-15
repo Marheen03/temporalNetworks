@@ -1,5 +1,7 @@
 import os, sys, re
 import networkx as nx
+import numpy as np
+import pandas as pd
 
 
 # returns array containing all flies
@@ -189,9 +191,55 @@ def shared_communites(fly, communitiesDict, allFlies):
 
     for i in range(len(communitiesDict)):
         communityID = communitiesDict[i][fly]
+        if communityID == 0:
+            continue
 
         for flyCopy in allFliesCopy:
             if communitiesDict[i][flyCopy] == communityID:
                 mutual_flies[flyCopy] += 1
     
     return mutual_flies
+
+
+def getHeatMapData(communitiesDict, allFlies, negative):
+    """
+    Creates dataframe which can be used to create heatmap
+    for visualizing preferences of flies' common communities.
+
+    Parameters:
+    communitiesDict (array): Array of community distributions for each snapshot.
+    allFlies (array): Array containing names of all flies.
+    negative (bool): Determines whether or not to set the least element of interval to -1 or 0.
+    
+    Returns:
+    pandas DataFrame: Dataframe containing coefficients of common community preference.
+    """
+    numOfFlies = len(allFlies)
+    npArray = np.zeros((numOfFlies, numOfFlies))
+
+    if negative:
+        num = -1
+    else:
+        num = 0
+    numOfSnapshots = len(communitiesDict)
+
+    for snapshot in range(numOfSnapshots):
+        for i, fly1 in enumerate(allFlies):
+            communityID1 = communitiesDict[snapshot][fly1]
+            if communityID1 == 0:
+                continue
+
+            for j, fly2 in enumerate(allFlies):
+                if fly1 == fly2:
+                    continue
+
+                communityID2 = communitiesDict[snapshot][fly2]
+                if communityID2 == 0:
+                    continue
+
+                if communityID1 == communityID2:
+                    npArray[i, j] += 1
+                else:
+                    npArray[i, j] += num
+            
+    return pd.DataFrame(npArray/numOfSnapshots, allFlies, allFlies)
