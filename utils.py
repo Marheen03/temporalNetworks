@@ -6,9 +6,11 @@ import pandas as pd
 
 # returns appropriate labels for plots
 def getLabels(snapshots_folder, communityDetection, usingWeights):
-    if snapshots_folder == 'CsCh_10':
+    folderName = snapshots_folder.split("/")
+
+    if folderName[1] == '10sec':
         snapshot_size = "10"
-    elif snapshots_folder == 'CsCh_30':
+    elif folderName[1] == '30sec':
         snapshot_size = "30"
     
     if communityDetection == "girvan_newman":
@@ -21,9 +23,18 @@ def getLabels(snapshots_folder, communityDetection, usingWeights):
     else:
         weights = "(BEZ TEŽINE)"
 
+    if folderName[0] == 'normal':
+        type = "NORMALNI TRETMAN"
+    elif folderName[0] == 'isolated':
+        if folderName[2] == 'Cs_5DIZ':
+            type = "IZOLIRANE 5 DANA"
+        elif folderName[2] == 'CTRL10':
+            type = "ZAJEDNO 10 DANA"
+
     return {"snapshotSize": snapshot_size,
             "detectionAlgorithm": detectionAlgorithm,
-            "weights": weights}
+            "weights": weights,
+            "type": type}
 
 
 # returns array containing all flies

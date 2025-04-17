@@ -23,10 +23,10 @@ def plotHistogram(dataset, type, labels):
 
     if type == 'community_size':
         plt.title(labels["detectionAlgorithm"] + " - histogram veličina zajednica " + labels["weights"])
-        plt.xlabel("Veličina zajednica")
+        plt.xlabel("Veličina zajednica (" + labels["type"] + ")")
     elif type == 'isolated_flies':
         plt.title(labels["detectionAlgorithm"] + " - histogram izoliranih mušica " + labels["weights"])
-        plt.xlabel("Broj izoliranih mušica")
+        plt.xlabel("Broj izoliranih mušica (" + labels["type"] + ")")
 
     plt.ylabel("Broj snapshotova (" + labels["snapshotSize"] + " sekundi)")
     plt.show()
@@ -52,7 +52,7 @@ def plotColorMap(communitiesDict, labels):
     plt.yticks(ticks=np.arange(len(flies)), labels=flies)
 
     plt.xlabel("Snapshotovi (" + labels["snapshotSize"] + " sekundi)")
-    plt.ylabel("Vinske mušice")
+    plt.ylabel("Vinske mušice (" + labels["type"] + ")")
     plt.title(labels["detectionAlgorithm"] + " - Pripadnost mušica zajednicama kroz vrijeme " + labels["weights"])
 
     # modify the label for Community 0
@@ -71,8 +71,8 @@ def plotBarChart(fliesInTop3, labels):
     plt.bar(fliesInTop3.keys(), fliesInTop3.values())
     plt.title(labels["detectionAlgorithm"] + " - Najčešće mušice u istoj zajednici " + labels["weights"])
     
-    plt.xlabel('Mušice (snapshot od ' + labels["snapshotSize"] +  ' sekundi)')
-    plt.ylabel('Broj nalaska u top 3')
+    plt.xlabel('Mušice (' + labels["type"] + ')')
+    plt.ylabel('Broj nalaska u top 3 (snapshotovi od ' + labels["snapshotSize"] +  ' sekundi)')
     plt.show()
 
 
@@ -87,6 +87,6 @@ def plotHeatMap(df, labels, negative):
     sb.heatmap(df, vmin=num, vmax=1, annot=True, linewidths=.5, ax=ax)
     
     plt.title(labels["detectionAlgorithm"] + " - Preferencije zajedničkih mušica " + labels["weights"] + ", " + labels["snapshotSize"] + " sekundi")
-    plt.xlabel('Mušice')
-    plt.ylabel('Mušice')
+    plt.xlabel('Mušice (' + labels["type"] + ')')
+    plt.ylabel('Mušice (' + labels["type"] + ')')
     plt.show()

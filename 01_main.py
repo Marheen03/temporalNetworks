@@ -2,10 +2,10 @@ import utils, plot, networkx as nx
 
 # configuration parameters
 numOfFlies = 12
-communityDetection = "louvain"
-usingWeights = True
-snapshots_folder = 'CsCh_10'
-
+communityDetection = "girvan_newman"
+usingWeights = False
+# snapshots_folder = 'isolated/30sec/CTRL10'
+snapshots_folder = 'normal/30sec'
 
 labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights)
 
@@ -64,7 +64,19 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
     numberOfIsolatedNodes.append(numOfIsolatedNodes + isolatedCommunities)
     snapshots += 1
 
+#plot.plotHistogram(communitySizes, 'community_size', labels)
+#plot.plotHistogram(numberOfIsolatedNodes, 'isolated_flies', labels)
 
+
+print("Ukupan broj zajednica:", numberOfCommunities)
+print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
+print("Duljina najveće zajednice:", maxCommunitySize)
+
+print("Ukupan broj izoliranih mušica:", isolatedNodes)
+print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
+
+
+"""
 consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
 communitiesDict = []
 for i, communities in enumerate(consistent_snapshots):
@@ -73,10 +85,12 @@ for i, communities in enumerate(consistent_snapshots):
     
     #print("{}. snapshot:".format(i+1), communityOfNode)
     #print(f"Snapshot {i+1}: {communities}")
-#plot.plotColorMap(communitiesDict, labels)
 
-df = utils.getHeatMapData(communitiesDict, allFlies, False)
-plot.plotHeatMap(df, labels, False)
+plot.plotColorMap(communitiesDict, labels)
+df = utils.getHeatMapData(communitiesDict, allFlies, True)
+plot.plotHeatMap(df, labels, True)
+"""
+
 
 """
 fliesInTop3 = {key : 0 for key in allFlies}
@@ -94,15 +108,3 @@ for fly in allFlies:
             break
 plot.plotBarChart(fliesInTop3, labels) 
 """
-
-"""
-print("Duljina najveće zajednice:", maxCommunitySize)
-print("Ukupan broj zajednica:", numberOfCommunities)
-print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
-
-print("Ukupan broj izoliranih mušica:", isolatedNodes)
-print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
-"""
-
-#plot.plotHistogram(communitySizes, 'community_size', labels)
-#plot.plotHistogram(numberOfIsolatedNodes, 'isolated_flies', labels)
