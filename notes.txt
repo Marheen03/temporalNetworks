@@ -17,19 +17,19 @@ Graf je usmjeren
 ============== NORMALNI TRETMAN (CsCh) =================
   ============== GIRVAN-NEWMANOV ALGORITAM =================
 
-  SNAPSHOT OD 10 SEKUNDI (s težinama)
-    Ukupan broj zajednica: 286
-    Prosječan broj zajednica: 2.3833333333333333
-
   SNAPSHOT OD 10 SEKUNDI (bez težina)
     Ukupan broj zajednica: 275
     Prosječan broj zajednica: 2.2916666666666665
 
-  SNAPSHOT OD 30 SEKUNDI (s težinama)
-    Ukupan broj zajednica: 57
-    Prosječan broj zajednica: 1.425
+  SNAPSHOT OD 10 SEKUNDI (s težinama)
+    Ukupan broj zajednica: 286
+    Prosječan broj zajednica: 2.3833333333333333
 
   SNAPSHOT OD 30 SEKUNDI (bez težina)
     Ukupan broj zajednica: 49
     Prosječan broj zajednica: 1.225
+
+  SNAPSHOT OD 30 SEKUNDI (s težinama)
+    Ukupan broj zajednica: 57
+    Prosječan broj zajednica: 1.425
   
