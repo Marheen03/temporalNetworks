@@ -1,7 +1,6 @@
 import os, sys, re
 import networkx as nx
 import numpy as np
-import pandas as pd
 
 
 # returns appropriate labels for plots
@@ -236,7 +235,7 @@ def shared_communites(fly, communitiesDict, allFlies):
 
 def getHeatMapData(communitiesDict, allFlies, negative):
     """
-    Creates dataframe which can be used to create heatmap
+    Creates NumPy array which can be used to create heatmap
     for visualizing preferences of flies' common communities.
 
     Parameters:
@@ -245,7 +244,7 @@ def getHeatMapData(communitiesDict, allFlies, negative):
     negative (bool): Determines whether or not to set the least element of interval to -1 or 0.
     
     Returns:
-    pandas DataFrame: Dataframe containing coefficients of common community preference.
+    numpy array: 2D array containing coefficients of common community preference.
     """
     numOfFlies = len(allFlies)
     npArray = np.zeros((numOfFlies, numOfFlies))
@@ -274,5 +273,6 @@ def getHeatMapData(communitiesDict, allFlies, negative):
                     npArray[i, j] += 1
                 else:
                     npArray[i, j] += num
-            
-    return pd.DataFrame(npArray/numOfSnapshots, allFlies, allFlies)
+    
+    # normalize matrix elements (divide elements with total number of snapshots)
+    return npArray / numOfSnapshots

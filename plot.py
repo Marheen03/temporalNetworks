@@ -90,3 +90,27 @@ def plotHeatMap(df, labels, negative):
     plt.xlabel('Mušice (' + labels["type"] + ')')
     plt.ylabel('Mušice (' + labels["type"] + ')')
     plt.show()
+
+
+# create boxplot for distribution visualization
+def plotBoxPlot(data, labels):
+    fig = plt.figure(figsize =(8, 6))
+
+    # custom x-axis labels
+    desc = ["10sec, težine", "10sec, bez težine", "30sec, težine", "30sec, bez težine"]
+    ax = fig.add_subplot(111)
+    # set custom labels on x-axis
+    ax.set_xticklabels(desc)
+
+    plt.boxplot(data)
+    # set y-axis values interval
+    plt.ylim(0, 1)
+
+    # add scatter plot to the boxplot
+    for i, y in enumerate(data):
+        x = np.full(len(y), i+1)
+        plt.scatter(x, y)
+
+    plt.title(labels["detectionAlgorithm"] + " - Distribucija koeficijenta preferencije (" + labels["type"] + ")")
+    plt.ylabel('Vrijednosti')
+    plt.show()

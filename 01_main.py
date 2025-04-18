@@ -1,20 +1,22 @@
-import utils, plot, networkx as nx
+import utils, plot
+import networkx as nx
+import pandas as pd
+import numpy as np
 
 # configuration parameters
 numOfFlies = 12
 communityDetection = "louvain"
 usingWeights = True
-snapshots_folder = 'isolated/30sec/Cs_5DIZ'
-# snapshots_folder = 'normal/30sec'
+#snapshots_folder = 'isolated/10sec/CTRL10'
+snapshots_folder = 'normal/30sec'
 
 labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights)
-
 if communityDetection == "girvan_newman":
     print("("+ labels["type"] +") GIRVAN-NEWMANOV ALGORITAM - " + labels["weights"] + " - " + labels["snapshotSize"] + "sec\n")
 elif communityDetection == "louvain":
     print("("+ labels["type"] +") LOUVAINOV ALGORITAM - " + labels["weights"] + " - snapshotovi od " + labels["snapshotSize"] + " sekundi\n")
 
-
+# load all GML networks
 snapshot_graphs = utils.load_files_from_folder(snapshots_folder, n_sort=True, file_format=".gml")
 allFlies = utils.getAllFlies(numOfFlies)
 
@@ -53,13 +55,14 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
     largestCommunity = len(max(communities, key=len))
     maxCommunitySize = max(maxCommunitySize, largestCommunity)
 
+    # counting number of found communities and isolated ones
     numberOfCommunities += len(communities)
     numOfIsolatedNodes = len(utils.find_isolated_nodes(communities, allFlies))
     isolatedNodes += numOfIsolatedNodes
     #print("{}. snapshot:".format(i+1), len(utils.find_isolated_nodes(communities)) + isolatedCommunities)
     
+    # stores graph for each snapshot into an array
     snapshotsCommunities.append(communities)
-
     communitySizes.append(len(communities) - isolatedCommunities)
     numberOfIsolatedNodes.append(numOfIsolatedNodes + isolatedCommunities)
     snapshots += 1
@@ -68,15 +71,17 @@ for i, graph_path in enumerate(snapshot_graphs.values()):
 #plot.plotHistogram(numberOfIsolatedNodes, 'isolated_flies', labels)
 
 
+"""
 print("Ukupan broj zajednica:", numberOfCommunities)
 print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
 print("Duljina najveće zajednice:", maxCommunitySize)
 
 print("Ukupan broj izoliranih mušica:", isolatedNodes)
 print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
-
-
 """
+
+
+# makes snapshot ID's consistent
 consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
 communitiesDict = []
 for i, communities in enumerate(consistent_snapshots):
@@ -86,9 +91,16 @@ for i, communities in enumerate(consistent_snapshots):
     #print("{}. snapshot:".format(i+1), communityOfNode)
     #print(f"Snapshot {i+1}: {communities}")
 
-plot.plotColorMap(communitiesDict, labels)
-df = utils.getHeatMapData(communitiesDict, allFlies, True)
-plot.plotHeatMap(df, labels, True)
+#plot.plotColorMap(communitiesDict, labels)
+
+"""
+matrix = utils.getHeatMapData(communitiesDict, allFlies, False)
+# get elements from matrix above diagonal
+upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
+#print(upper_elements.tolist())
+
+#df = pd.DataFrame(matrix, allFlies, allFlies)
+#plot.plotHeatMap(df, labels, False)
 """
 
 
