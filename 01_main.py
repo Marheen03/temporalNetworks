@@ -1,7 +1,6 @@
 import utils, plot
 import networkx as nx
-import pandas as pd
-import numpy as np
+
 
 # configuration parameters
 numOfFlies = 12
@@ -81,7 +80,8 @@ print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
 """
 
 
-# makes snapshot ID's consistent
+"""
+# makes snapshot IDs consistent
 consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
 communitiesDict = []
 for i, communities in enumerate(consistent_snapshots):
@@ -92,6 +92,8 @@ for i, communities in enumerate(consistent_snapshots):
     #print(f"Snapshot {i+1}: {communities}")
 
 #plot.plotColorMap(communitiesDict, labels)
+"""
+
 
 """
 matrix = utils.getHeatMapData(communitiesDict, allFlies, False)

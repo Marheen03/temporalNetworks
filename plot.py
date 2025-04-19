@@ -33,7 +33,7 @@ def plotHistogram(dataset, type, labels):
 
 
 # create colormap for flies' community distribution
-def plotColorMap(communitiesDict, labels):
+def plotColorMap(communitiesDict, labels, id):
     # get unique fly names
     flies = list(communitiesDict[0].keys())
 
@@ -93,24 +93,20 @@ def plotHeatMap(df, labels, negative):
 
 
 # create boxplot for distribution visualization
-def plotBoxPlot(data, labels):
-    fig = plt.figure(figsize =(8, 6))
-
-    # custom x-axis labels
-    desc = ["10sec, težine", "10sec, bez težine", "30sec, težine", "30sec, bez težine"]
-    ax = fig.add_subplot(111)
-    # set custom labels on x-axis
-    ax.set_xticklabels(desc)
-
-    plt.boxplot(data)
+def plotBoxPlot(data, type, folderName, id):
+    plt.figure(figsize =(8, 6))
+    plt.boxplot(data.values(), labels=data.keys())
     # set y-axis values interval
     plt.ylim(0, 1)
 
-    # add scatter plot to the boxplot
-    for i, y in enumerate(data):
-        x = np.full(len(y), i+1)
-        plt.scatter(x, y)
-
-    plt.title(labels["detectionAlgorithm"] + " - Distribucija koeficijenta preferencije (" + labels["type"] + ")")
+    plt.title("Distribucija koeficijenta preferencije (" + type + ", " + str(id) + ". opservacija)")
     plt.ylabel('Vrijednosti')
-    plt.show()
+    figname = 'boxplots/{}/observation{}.jpg'.format(folderName, id)
+    plt.savefig(figname)
+    #plt.show()
+
+
+"""
+def plotBoxPlot(data, labels):
+    plt.title(labels["detectionAlgorithm"] + " - Distribucija koeficijenta preferencije (" + labels["type"] + ")")
+"""

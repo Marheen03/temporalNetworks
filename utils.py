@@ -23,12 +23,12 @@ def getLabels(snapshots_folder, communityDetection, usingWeights):
         weights = "(BEZ TEŽINE)"
 
     if folderName[0] == 'normal':
-        type = "NORMALNI TRETMAN"
+        type = "MLADE"
     elif folderName[0] == 'isolated':
         if folderName[2] == 'Cs_5DIZ':
-            type = "IZOLIRANE 5 DANA"
+            type = "IZOLIRANE"
         elif folderName[2] == 'CTRL10':
-            type = "ZAJEDNO 10 DANA"
+            type = "STARE"
 
     return {"snapshotSize": snapshot_size,
             "detectionAlgorithm": detectionAlgorithm,
