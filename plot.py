@@ -93,20 +93,25 @@ def plotHeatMap(df, labels, negative):
 
 
 # create boxplot for distribution visualization
-def plotBoxPlot(data, type, folderName, id):
-    plt.figure(figsize =(8, 6))
-    plt.boxplot(data.values(), labels=data.keys())
-    # set y-axis values interval
-    plt.ylim(0, 1)
+def plotBoxPlot(data, type, multiple):
+    if multiple:
+        fig, _ = plt.subplots(4, 5, figsize=(11, 8))
+        fig.tight_layout(pad=4)
 
-    plt.title("Distribucija koeficijenta preferencije (" + type + ", " + str(id) + ". opservacija)")
-    plt.ylabel('Vrijednosti')
-    figname = 'boxplots/{}/observation{}.jpg'.format(folderName, id)
-    plt.savefig(figname)
-    #plt.show()
+        for i, dataDict in enumerate(data):
+            plt.subplot(4, 5, i+1)
+            plt.boxplot(dataDict.values(), labels=dataDict.keys())
+            plt.ylim(0, 1)
 
+            plt.title("{}. opservacija".format(i+1))
 
-"""
-def plotBoxPlot(data, labels):
-    plt.title(labels["detectionAlgorithm"] + " - Distribucija koeficijenta preferencije (" + labels["type"] + ")")
-"""
+        plt.suptitle("Distribucija koeficijenta preferencije (" + type + ", zasebno)")    
+    else:
+        plt.figure(figsize=(8, 6))
+        plt.boxplot(data.values(), labels=data.keys())
+
+        plt.ylim(0, 1)
+        plt.ylabel('Vrijednosti')
+        plt.title("Distribucija koeficijenta preferencije (" + type + ", sjedninjeno)")
+    
+    plt.show()

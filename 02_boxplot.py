@@ -3,8 +3,8 @@ import networkx as nx
 import numpy as np
 
 numOfFlies = 12
-communityDetection = "louvain"
 usingWeights = False
+usingSubplot = False
 
 """
 #=========CsCh=========
@@ -30,18 +30,15 @@ w_10sec = [0.15833333333333333, 0.21666666666666667, 0.20833333333333334, 0.2083
 w_30sec = [0.3, 0.425, 0.325, 0.25, 0.35, 0.3, 0.425, 0.225, 0.325, 0.4, 0.225, 0.25, 0.375, 0.225, 0.45, 0.3, 0.25, 0.3, 0.3, 0.275, 0.45, 0.35, 0.35, 0.325, 0.4, 0.3, 0.275, 0.4, 0.35, 0.25, 0.325, 0.275, 0.375, 0.325, 0.25, 0.35, 0.175, 0.35, 0.375, 0.15, 0.275, 0.35, 0.3, 0.4, 0.225, 0.275, 0.3, 0.325, 0.225, 0.275, 0.3, 0.25, 0.3, 0.25, 0.25, 0.275, 0.35, 0.325, 0.4, 0.275, 0.275, 0.425, 0.3, 0.425, 0.275, 0.325]
 """
 
-"""
-data = {
-    '10sec, težine': w_10sec,
-    '10sec, bez težine': nw_10sec,
-    '30sec, težine': w_30sec,
-    '30sec, bez težine': nw_30sec
-}
-plot.plotBoxPlot(data, type)
-"""
 
 snapshots_folder = '10_sec_window/Cs_5DIZ/'
 folders = os.listdir(snapshots_folder)
+
+if usingSubplot:
+    dataArray = []
+else:
+    cumulativeMatrix = np.zeros((numOfFlies, numOfFlies))
+    numOfSnapshots = 0
 
 folderName = snapshots_folder.split("/")
 if folderName[1] == "Cs_5DIZ":
@@ -59,19 +56,18 @@ for i, folder in enumerate(folders):
 
     snapshotsCommunities = []
     # for each snapshot
-    for j,graph_path in enumerate(snapshot_graphs.values()):
+    for j, graph_path in enumerate(snapshot_graphs.values()):
         G = nx.read_gml(graph_path)
-        print(i+1, j+1)
 
         if usingWeights:
             communities = nx.community.louvain_communities(G, weight="count", seed=100)
         else:
             communities = nx.community.louvain_communities(G, seed=100)
         print(i+1, j+1)
+
         # stores graph for each snapshot into an array
         snapshotsCommunities.append(communities)
     
-    """
     # makes snapshot IDs consistent
     consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
     communitiesDict = []
@@ -79,7 +75,29 @@ for i, folder in enumerate(folders):
         communityOfNode = utils.get_community_of_node(communities, allFlies)
         communitiesDict.append(communityOfNode)
 
-    matrix = utils.getHeatMapData(communitiesDict, allFlies, False)
+    if usingSubplot:
+        matrix = utils.getHeatMapData(communitiesDict, allFlies, negative=False, normalize=True)
+    else:
+        matrix = utils.getHeatMapData(communitiesDict, allFlies, negative=False, normalize=False)
+    
+    # get elements from matrix above diagonal
+    upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
+    values = upper_elements.tolist()
+
+    if usingSubplot:
+        data = {
+            'Louvain, 10sec, bez težina': values
+        }
+        dataArray.append(data)
+    else:
+        cumulativeMatrix = np.add(cumulativeMatrix, matrix)
+        numOfSnapshots += len(communitiesDict)
+
+if usingSubplot:
+    plot.plotBoxPlot(dataArray, type, True)
+else:
+    matrix = cumulativeMatrix / numOfSnapshots
+
     # get elements from matrix above diagonal
     upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
     values = upper_elements.tolist()
@@ -87,5 +105,15 @@ for i, folder in enumerate(folders):
     data = {
         'Louvain, 10sec, bez težina': values
     }
-    #plot.plotBoxPlot(data, type, folderName[1], i+1)
-    """
+    plot.plotBoxPlot(data, type, False)
+
+
+"""
+data = {
+    '10sec, težine': w_10sec,
+    '10sec, bez težine': nw_10sec,
+    '30sec, težine': w_30sec,
+    '30sec, bez težine': nw_30sec
+}
+plot.plotBoxPlot(data, type, False)
+"""

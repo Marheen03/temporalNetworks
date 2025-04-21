@@ -233,7 +233,7 @@ def shared_communites(fly, communitiesDict, allFlies):
     return mutual_flies
 
 
-def getHeatMapData(communitiesDict, allFlies, negative):
+def getHeatMapData(communitiesDict, allFlies, negative, normalize):
     """
     Creates NumPy array which can be used to create heatmap
     for visualizing preferences of flies' common communities.
@@ -242,6 +242,7 @@ def getHeatMapData(communitiesDict, allFlies, negative):
     communitiesDict (array): Array of community distributions for each snapshot.
     allFlies (array): Array containing names of all flies.
     negative (bool): Determines whether or not to set the least element of interval to -1 or 0.
+    normalize (bool): Whether or not to normalize matrix values
     
     Returns:
     numpy array: 2D array containing coefficients of common community preference.
@@ -274,5 +275,8 @@ def getHeatMapData(communitiesDict, allFlies, negative):
                 else:
                     npArray[i, j] += num
     
-    # normalize matrix elements (divide elements with total number of snapshots)
-    return npArray / numOfSnapshots
+    if normalize:
+        # normalize matrix elements (divide elements with total number of snapshots)
+        return npArray / numOfSnapshots
+    else:
+        return npArray

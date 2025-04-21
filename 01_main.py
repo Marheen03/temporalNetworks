@@ -96,7 +96,7 @@ for i, communities in enumerate(consistent_snapshots):
 
 
 """
-matrix = utils.getHeatMapData(communitiesDict, allFlies, False)
+matrix = utils.getHeatMapData(communitiesDict, allFlies, negative=False, normalize=True)
 # get elements from matrix above diagonal
 upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
 #print(upper_elements.tolist())
