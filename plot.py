@@ -105,13 +105,13 @@ def plotBoxPlot(data, type, multiple):
 
             plt.title("{}. opservacija".format(i+1))
 
-        plt.suptitle("Distribucija koeficijenta preferencije (" + type + ", zasebno)")    
+        plt.suptitle("Distribucija koeficijenta preferencije (" + type + ")")    
     else:
         plt.figure(figsize=(8, 6))
         plt.boxplot(data.values(), labels=data.keys())
 
         plt.ylim(0, 1)
         plt.ylabel('Vrijednosti')
-        plt.title("Distribucija koeficijenta preferencije (" + type + ", sjedninjeno)")
+        plt.title("Distribucija koeficijenta preferencije (" + type + ")")
     
     plt.show()

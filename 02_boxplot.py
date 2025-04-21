@@ -31,81 +31,75 @@ w_30sec = [0.3, 0.425, 0.325, 0.25, 0.35, 0.3, 0.425, 0.225, 0.325, 0.4, 0.225, 
 """
 
 
-snapshots_folder = '10_sec_window/Cs_5DIZ/'
+snapshots_folder = '10_sec_window/'
 folders = os.listdir(snapshots_folder)
-
 if usingSubplot:
     dataArray = []
 else:
-    cumulativeMatrix = np.zeros((numOfFlies, numOfFlies))
-    numOfSnapshots = 0
+    cumulativeDict = {}
 
-folderName = snapshots_folder.split("/")
-if folderName[1] == "Cs_5DIZ":
-    type = "IZOLIRANE"
-elif folderName[1] == "CS_10D":
-    type = "STARE"
-else:
-    type = "MLADE"
+# for each group
+for folder in folders:
+    snapshots_folder = '10_sec_window/' + folder
+    treatments = os.listdir(snapshots_folder)
+    if usingSubplot == False:
+        coefficients = []
+    
+    folderName = snapshots_folder.split("/")
+    if folderName[1] == "Cs_5DIZ":
+        type = "IZOLIRANE"
+    elif folderName[1] == "CS_10D":
+        type = "STARE"
+    else:
+        type = "MLADE"
+    
+    # for each treatment
+    for i, treatment in enumerate(treatments):
+        path = snapshots_folder + "/" + treatment
+        snapshot_graphs = utils.load_files_from_folder(path, n_sort=True, file_format=".gml")
+        allFlies = utils.getAllFlies(numOfFlies)
 
+        snapshotsCommunities = []
+        # for each snapshot
+        for j, graph_path in enumerate(snapshot_graphs.values()):
+            G = nx.read_gml(graph_path)
 
-for i, folder in enumerate(folders):
-    path = snapshots_folder + folder
-    snapshot_graphs = utils.load_files_from_folder(path, n_sort=True, file_format=".gml")
-    allFlies = utils.getAllFlies(numOfFlies)
+            if usingWeights:
+                communities = nx.community.louvain_communities(G, weight="count", seed=100)
+            else:
+                communities = nx.community.louvain_communities(G, seed=100)
+            print(i+1, j+1)
 
-    snapshotsCommunities = []
-    # for each snapshot
-    for j, graph_path in enumerate(snapshot_graphs.values()):
-        G = nx.read_gml(graph_path)
+            # stores graph for each snapshot into an array
+            snapshotsCommunities.append(communities)
+        
+        # makes snapshot IDs consistent
+        consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
+        communitiesDict = []
+        for communities in consistent_snapshots:
+            communityOfNode = utils.get_community_of_node(communities, allFlies)
+            communitiesDict.append(communityOfNode)
 
-        if usingWeights:
-            communities = nx.community.louvain_communities(G, weight="count", seed=100)
+        matrix = utils.getHeatMapData(communitiesDict, allFlies, negative=False)    
+        # get elements from matrix above diagonal
+        upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
+        values = upper_elements.tolist()
+
+        if usingSubplot:
+            data = {
+                'Louvain, 10sec, bez težina': values
+            }
+            dataArray.append(data)
         else:
-            communities = nx.community.louvain_communities(G, seed=100)
-        print(i+1, j+1)
-
-        # stores graph for each snapshot into an array
-        snapshotsCommunities.append(communities)
+            coefficients.extend(values)
     
-    # makes snapshot IDs consistent
-    consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
-    communitiesDict = []
-    for communities in consistent_snapshots:
-        communityOfNode = utils.get_community_of_node(communities, allFlies)
-        communitiesDict.append(communityOfNode)
-
     if usingSubplot:
-        matrix = utils.getHeatMapData(communitiesDict, allFlies, negative=False, normalize=True)
+        plot.plotBoxPlot(dataArray, type, multiple=True)
     else:
-        matrix = utils.getHeatMapData(communitiesDict, allFlies, negative=False, normalize=False)
-    
-    # get elements from matrix above diagonal
-    upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
-    values = upper_elements.tolist()
+        cumulativeDict.update({type : coefficients})
 
-    if usingSubplot:
-        data = {
-            'Louvain, 10sec, bez težina': values
-        }
-        dataArray.append(data)
-    else:
-        cumulativeMatrix = np.add(cumulativeMatrix, matrix)
-        numOfSnapshots += len(communitiesDict)
-
-if usingSubplot:
-    plot.plotBoxPlot(dataArray, type, True)
-else:
-    matrix = cumulativeMatrix / numOfSnapshots
-
-    # get elements from matrix above diagonal
-    upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
-    values = upper_elements.tolist()
-
-    data = {
-        'Louvain, 10sec, bez težina': values
-    }
-    plot.plotBoxPlot(data, type, False)
+if usingSubplot == False:
+    plot.plotBoxPlot(cumulativeDict, 'Louvain, 10sec, bez težina', multiple=False)
 
 
 """
