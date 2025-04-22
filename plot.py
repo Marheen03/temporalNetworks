@@ -93,7 +93,7 @@ def plotHeatMap(df, labels, negative):
 
 
 # create boxplot for distribution visualization
-def plotBoxPlot(data, type, multiple):
+def plotBoxPlot(data, type, multiple, directed):
     if multiple:
         fig, _ = plt.subplots(4, 5, figsize=(11, 8))
         fig.tight_layout(pad=4)
@@ -105,13 +105,13 @@ def plotBoxPlot(data, type, multiple):
 
             plt.title("{}. opservacija".format(i+1))
 
-        plt.suptitle("Distribucija koeficijenta preferencije (" + type + ")")    
+        plt.suptitle("Distribucija koeficijenta preferencije (" + type + "), " + directed)    
     else:
         plt.figure(figsize=(8, 6))
         plt.boxplot(data.values(), labels=data.keys())
 
         plt.ylim(0, 1)
-        plt.ylabel('Vrijednosti')
+        plt.ylabel('Vrijednosti ' + directed)
         plt.title("Distribucija koeficijenta preferencije (" + type + ")")
     
     plt.show()

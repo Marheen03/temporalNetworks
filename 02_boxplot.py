@@ -5,6 +5,7 @@ import numpy as np
 numOfFlies = 12
 usingWeights = False
 usingSubplot = False
+isDirected = True
 
 """
 #=========CsCh=========
@@ -30,20 +31,25 @@ w_10sec = [0.15833333333333333, 0.21666666666666667, 0.20833333333333334, 0.2083
 w_30sec = [0.3, 0.425, 0.325, 0.25, 0.35, 0.3, 0.425, 0.225, 0.325, 0.4, 0.225, 0.25, 0.375, 0.225, 0.45, 0.3, 0.25, 0.3, 0.3, 0.275, 0.45, 0.35, 0.35, 0.325, 0.4, 0.3, 0.275, 0.4, 0.35, 0.25, 0.325, 0.275, 0.375, 0.325, 0.25, 0.35, 0.175, 0.35, 0.375, 0.15, 0.275, 0.35, 0.3, 0.4, 0.225, 0.275, 0.3, 0.325, 0.225, 0.275, 0.3, 0.25, 0.3, 0.25, 0.25, 0.275, 0.35, 0.325, 0.4, 0.275, 0.275, 0.425, 0.3, 0.425, 0.275, 0.325]
 """
 
+if isDirected:
+    directed = "(USMJEREN)"
+else:
+    directed = "(NEUSMJEREN)"
 
 snapshots_folder = '10_sec_window/'
 folders = os.listdir(snapshots_folder)
-if usingSubplot:
-    dataArray = []
-else:
+if usingSubplot==False:
     cumulativeDict = {}
 
 # for each group
 for folder in folders:
+    if usingSubplot:
+        dataArray = []
+    else:
+        coefficients = []
+        
     snapshots_folder = '10_sec_window/' + folder
     treatments = os.listdir(snapshots_folder)
-    if usingSubplot == False:
-        coefficients = []
     
     folderName = snapshots_folder.split("/")
     if folderName[1] == "Cs_5DIZ":
@@ -62,7 +68,11 @@ for folder in folders:
         snapshotsCommunities = []
         # for each snapshot
         for j, graph_path in enumerate(snapshot_graphs.values()):
-            G = nx.read_gml(graph_path)
+            if isDirected:
+                G = nx.read_gml(graph_path)
+            else:
+                graph = nx.read_gml(graph_path)
+                G = graph.to_undirected()
 
             if usingWeights:
                 communities = nx.community.louvain_communities(G, weight="count", seed=100)
@@ -94,12 +104,12 @@ for folder in folders:
             coefficients.extend(values)
     
     if usingSubplot:
-        plot.plotBoxPlot(dataArray, type, multiple=True)
+        plot.plotBoxPlot(dataArray, type, True, directed)
     else:
         cumulativeDict.update({type : coefficients})
 
 if usingSubplot == False:
-    plot.plotBoxPlot(cumulativeDict, 'Louvain, 10sec, bez težina', multiple=False)
+    plot.plotBoxPlot(cumulativeDict, 'Louvain, 10sec, bez težina', False, directed)
 
 
 """

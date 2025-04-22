@@ -4,7 +4,7 @@ import numpy as np
 
 
 # returns appropriate labels for plots
-def getLabels(snapshots_folder, communityDetection, usingWeights):
+def getLabels(snapshots_folder, communityDetection, usingWeights, isDirected):
     folderName = snapshots_folder.split("/")
 
     if folderName[1] == '10sec':
@@ -21,6 +21,11 @@ def getLabels(snapshots_folder, communityDetection, usingWeights):
         weights = "(S TEŽINOM)"
     else:
         weights = "(BEZ TEŽINE)"
+    
+    if isDirected:
+        directed = "(USMJEREN)"
+    else:
+        directed = "(NEUSMJEREN)"
 
     if folderName[0] == 'normal':
         type = "MLADE"
@@ -33,7 +38,8 @@ def getLabels(snapshots_folder, communityDetection, usingWeights):
     return {"snapshotSize": snapshot_size,
             "detectionAlgorithm": detectionAlgorithm,
             "weights": weights,
-            "type": type}
+            "type": type,
+            "directed": directed}
 
 
 # returns array containing all flies

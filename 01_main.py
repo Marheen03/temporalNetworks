@@ -1,15 +1,18 @@
 import utils, plot
 import networkx as nx
+import numpy as np
+import pandas as pd
 
 
 # configuration parameters
 numOfFlies = 12
 communityDetection = "louvain"
 usingWeights = True
+isDirected = True
 #snapshots_folder = 'isolated/10sec/CTRL10'
-snapshots_folder = 'normal/30sec'
+snapshots_folder = 'isolated/10sec/Cs_5DIZ'
 
-labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights)
+labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights, isDirected)
 if communityDetection == "girvan_newman":
     print("("+ labels["type"] +") GIRVAN-NEWMANOV ALGORITAM - " + labels["weights"] + " - " + labels["snapshotSize"] + "sec\n")
 elif communityDetection == "louvain":
@@ -29,7 +32,11 @@ snapshotsCommunities = []
 
 # for each snapshot
 for i, graph_path in enumerate(snapshot_graphs.values()):
-    G = nx.read_gml(graph_path)
+    if isDirected:
+        G = nx.read_gml(graph_path)
+    else:
+        graph = nx.read_gml(graph_path)
+        G = graph.to_undirected()
     
     if communityDetection == "girvan_newman":
         if usingWeights:
@@ -78,7 +85,6 @@ print("Duljina najveće zajednice:", maxCommunitySize)
 print("Ukupan broj izoliranih mušica:", isolatedNodes)
 print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
 """
-
 
 """
 # makes snapshot IDs consistent
