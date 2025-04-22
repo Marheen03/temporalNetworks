@@ -5,7 +5,7 @@ import numpy as np
 numOfFlies = 12
 usingWeights = False
 usingSubplot = False
-isDirected = True
+isDirected = False
 
 """
 #=========CsCh=========
@@ -46,7 +46,8 @@ for folder in folders:
     if usingSubplot:
         dataArray = []
     else:
-        coefficients = []
+        dict = {}
+        #coefficients = []
         
     snapshots_folder = '10_sec_window/' + folder
     treatments = os.listdir(snapshots_folder)
@@ -101,15 +102,19 @@ for folder in folders:
             }
             dataArray.append(data)
         else:
-            coefficients.extend(values)
+            key = "{}.".format(i+1)
+            dict.update({key : values})
+            #coefficients.extend(values)
     
     if usingSubplot:
         plot.plotBoxPlot(dataArray, type, True, directed)
     else:
-        cumulativeDict.update({type : coefficients})
+        plot.plotBoxPlot(dict, type, False, directed)
+        #cumulativeDict.update({type : coefficients})
 
-if usingSubplot == False:
-    plot.plotBoxPlot(cumulativeDict, 'Louvain, 10sec, bez težina', False, directed)
+
+#if usingSubplot == False:
+    #plot.plotBoxPlot(cumulativeDict, 'Louvain, 10sec, bez težina', False, directed)
 
 
 """

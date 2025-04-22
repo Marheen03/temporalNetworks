@@ -111,6 +111,7 @@ def plotBoxPlot(data, type, multiple, directed):
         plt.boxplot(data.values(), labels=data.keys())
 
         plt.ylim(0, 1)
+        plt.xlabel('Redni broj tretmana (Louvain, 10sec, bez težina)')
         plt.ylabel('Vrijednosti ' + directed)
         plt.title("Distribucija koeficijenta preferencije (" + type + ")")
     
