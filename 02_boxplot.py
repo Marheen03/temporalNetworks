@@ -4,7 +4,6 @@ import numpy as np
 
 numOfFlies = 12
 usingWeights = False
-usingSubplot = False
 accumulated = True
 isDirected = True
 
@@ -39,14 +38,11 @@ else:
 
 snapshots_folder = 'treatments/30_sec_window/'
 folders = os.listdir(snapshots_folder)
-if usingSubplot==False:
-    cumulativeDict = {}
+cumulativeDict = {}
 
 # for each group
 for folder in folders:
-    if usingSubplot:
-        dataArray = []
-    elif accumulated:
+    if accumulated:
         coefficients = []
     else:
         dict = {}
@@ -61,6 +57,11 @@ for folder in folders:
         type = "STARE"
     else:
         type = "MLADE"
+    
+    if folderName[1][0] == "1":
+        key = 'Louvain, 10sec, bez težina'
+    else:
+        key = 'Louvain, 30sec, bez težina'
     
     # for each treatment
     for i, treatment in enumerate(treatments):
@@ -98,27 +99,20 @@ for folder in folders:
         upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
         values = upper_elements.tolist()
 
-        if usingSubplot:
-            data = {
-                'Louvain, 10sec, bez težina': values
-            }
-            dataArray.append(data)
-        elif accumulated:
+        if accumulated:
             coefficients.extend(values)
         else:
-            key = "{}.".format(i+1)
-            dict.update({key : values})
+            key1 = "{}.".format(i+1)
+            dict.update({key1 : values})
     
-    if usingSubplot:
-        plot.plotBoxPlot(dataArray, type, True, directed, accumulated)
-    elif accumulated:
+    if accumulated:
         cumulativeDict.update({type : coefficients})
     else:
-        plot.plotBoxPlot(dict, type, False, directed, accumulated)
+        plot.plotBoxPlot(dict, type, directed, accumulated, key)
 
 
 if accumulated:
-    plot.plotBoxPlot(cumulativeDict, 'Louvain, 10sec, bez težina', False, directed, accumulated)
+    plot.plotBoxPlot(cumulativeDict, key, directed, accumulated, key)
 
 
 """
@@ -128,5 +122,5 @@ data = {
     '30sec, težine': w_30sec,
     '30sec, bez težine': nw_30sec
 }
-plot.plotBoxPlot(data, type, False)
+plot.plotBoxPlot(data, type, directed, accumulated)
 """

@@ -4,7 +4,7 @@ import numpy as np
 
 
 # returns appropriate labels for plots
-def getLabels(snapshots_folder, communityDetection, usingWeights, isDirected):
+def getLabels(snapshots_folder, communityDetection, usingWeights):
     folderName = snapshots_folder.split("/")
 
     if folderName[1] == '10sec':
@@ -21,11 +21,6 @@ def getLabels(snapshots_folder, communityDetection, usingWeights, isDirected):
         weights = "(S TEŽINOM)"
     else:
         weights = "(BEZ TEŽINE)"
-    
-    if isDirected:
-        directed = "(USMJEREN)"
-    else:
-        directed = "(NEUSMJEREN)"
 
     if folderName[0] == 'normal':
         type = "MLADE"
@@ -35,11 +30,12 @@ def getLabels(snapshots_folder, communityDetection, usingWeights, isDirected):
         elif folderName[2] == 'CTRL10':
             type = "STARE"
 
-    return {"snapshotSize": snapshot_size,
-            "detectionAlgorithm": detectionAlgorithm,
-            "weights": weights,
-            "type": type,
-            "directed": directed}
+    return {
+        "snapshotSize": snapshot_size,
+        "detectionAlgorithm": detectionAlgorithm,
+        "weights": weights,
+        "type": type
+    }
 
 
 # returns array containing all flies
@@ -248,7 +244,6 @@ def getHeatMapData(communitiesDict, allFlies, negative):
     communitiesDict (array): Array of community distributions for each snapshot.
     allFlies (array): Array containing names of all flies.
     negative (bool): Determines whether or not to set the least element of interval to -1 or 0.
-    normalize (bool): Whether or not to normalize matrix values
     
     Returns:
     numpy array: 2D array containing coefficients of common community preference.

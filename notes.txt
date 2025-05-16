@@ -4,32 +4,11 @@
   (tzv. izolirane zajednice) - izuzete su kod računanja broja zajednica
 - bilo je potrebno osigurati da slične zajednice imaju konzistenti ID kroz sve snapshotove
 
-- uporabom Louvainovog algoritma broj detektiranih zajednica varira od 366 do 372 s težinama
+- uporabom Louvainovog algoritma broj otkrivenih zajednica varira od 366 do 372 s težinama
   te varira od 362 do 365 bez težina
-- uporabom Louvainovog algoritma broj detektiranih zajednica varira od 113 do 117 s težinama
+- uporabom Louvainovog algoritma broj otkrivenih zajednica varira od 113 do 117 s težinama
   te varira od 99 do 106 bez težina
 
-Uporabom 'seeda' broj detektiranih zajednica ostaje isti
+Uporabom 'seeda' broj otkrivenih zajednica ostaje isti
 
 Graf je usmjeren
-
-
-============== NORMALNI TRETMAN (CsCh) =================
-  ============== GIRVAN-NEWMANOV ALGORITAM =================
-
-  SNAPSHOT OD 10 SEKUNDI (bez težina)
-    Ukupan broj zajednica: 275
-    Prosječan broj zajednica: 2.2916666666666665
-
-  SNAPSHOT OD 10 SEKUNDI (s težinama)
-    Ukupan broj zajednica: 286
-    Prosječan broj zajednica: 2.3833333333333333
-
-  SNAPSHOT OD 30 SEKUNDI (bez težina)
-    Ukupan broj zajednica: 49
-    Prosječan broj zajednica: 1.225
-
-  SNAPSHOT OD 30 SEKUNDI (s težinama)
-    Ukupan broj zajednica: 57
-    Prosječan broj zajednica: 1.425
-  

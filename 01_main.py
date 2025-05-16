@@ -8,11 +8,9 @@ import pandas as pd
 numOfFlies = 12
 communityDetection = "louvain"
 usingWeights = True
-isDirected = True
-#snapshots_folder = 'isolated/10sec/CTRL10'
 snapshots_folder = 'isolated/10sec/Cs_5DIZ'
 
-labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights, isDirected)
+labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights)
 if communityDetection == "girvan_newman":
     print("("+ labels["type"] +") GIRVAN-NEWMANOV ALGORITAM - " + labels["weights"] + " - " + labels["snapshotSize"] + "sec\n")
 elif communityDetection == "louvain":
@@ -32,11 +30,7 @@ snapshotsCommunities = []
 
 # for each snapshot
 for i, graph_path in enumerate(snapshot_graphs.values()):
-    if isDirected:
-        G = nx.read_gml(graph_path)
-    else:
-        graph = nx.read_gml(graph_path)
-        G = graph.to_undirected()
+    G = nx.read_gml(graph_path)
     
     if communityDetection == "girvan_newman":
         if usingWeights:
