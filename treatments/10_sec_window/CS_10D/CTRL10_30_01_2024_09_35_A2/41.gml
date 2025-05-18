@@ -1,0 +1,107 @@
+graph [
+  directed 1
+  node [
+    id 0
+    label "fly11"
+  ]
+  node [
+    id 1
+    label "fly7"
+  ]
+  node [
+    id 2
+    label "fly12"
+  ]
+  node [
+    id 3
+    label "fly6"
+  ]
+  node [
+    id 4
+    label "fly2"
+  ]
+  node [
+    id 5
+    label "fly3"
+  ]
+  node [
+    id 6
+    label "fly1"
+  ]
+  node [
+    id 7
+    label "fly8"
+  ]
+  edge [
+    source 0
+    target 1
+    count 1
+    total_interaction_times 929
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 929
+  ]
+  edge [
+    source 0
+    target 2
+    count 1
+    total_interaction_times 646
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 646
+  ]
+  edge [
+    source 1
+    target 2
+    count 1
+    total_interaction_times 553
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 553
+  ]
+  edge [
+    source 1
+    target 0
+    count 1
+    total_interaction_times 32
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 32
+  ]
+  edge [
+    source 3
+    target 4
+    count 2
+    total_interaction_times 185
+    interaction_times_list 117
+    interaction_times_list 68
+  ]
+  edge [
+    source 3
+    target 6
+    count 1
+    total_interaction_times 28
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 28
+  ]
+  edge [
+    source 5
+    target 1
+    count 1
+    total_interaction_times 51
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 51
+  ]
+  edge [
+    source 5
+    target 0
+    count 1
+    total_interaction_times 434
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 434
+  ]
+  edge [
+    source 6
+    target 7
+    count 1
+    total_interaction_times 36
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 36
+  ]
+]

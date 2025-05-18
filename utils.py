@@ -170,8 +170,8 @@ def track_consistent_communities(snapshots, similarity_threshold=0.5):
                 last_assigned_id += 1
         else:
             # Match communities with previous snapshot
-            prev_mapping = community_mapping[t - 1]
-            prev_communities = [set(comm) for comm in snapshots[t - 1]]
+            prev_mapping = community_mapping[t-1]
+            prev_communities = [set(comm) for comm in snapshots[t-1]]
             
             used_ids = set()  # Track used IDs to prevent duplicate assignments
             

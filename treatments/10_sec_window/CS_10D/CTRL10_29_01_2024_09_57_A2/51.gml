@@ -1,0 +1,151 @@
+graph [
+  directed 1
+  node [
+    id 0
+    label "fly4"
+  ]
+  node [
+    id 1
+    label "fly9"
+  ]
+  node [
+    id 2
+    label "fly11"
+  ]
+  node [
+    id 3
+    label "fly3"
+  ]
+  node [
+    id 4
+    label "fly6"
+  ]
+  node [
+    id 5
+    label "fly2"
+  ]
+  node [
+    id 6
+    label "fly5"
+  ]
+  node [
+    id 7
+    label "fly7"
+  ]
+  node [
+    id 8
+    label "fly8"
+  ]
+  edge [
+    source 0
+    target 1
+    count 2
+    total_interaction_times 309
+    interaction_times_list 144
+    interaction_times_list 165
+  ]
+  edge [
+    source 1
+    target 6
+    count 1
+    total_interaction_times 14
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 14
+  ]
+  edge [
+    source 1
+    target 0
+    count 1
+    total_interaction_times 23
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 23
+  ]
+  edge [
+    source 2
+    target 3
+    count 2
+    total_interaction_times 52
+    interaction_times_list 35
+    interaction_times_list 17
+  ]
+  edge [
+    source 2
+    target 4
+    count 1
+    total_interaction_times 84
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 84
+  ]
+  edge [
+    source 3
+    target 5
+    count 2
+    total_interaction_times 115
+    interaction_times_list 49
+    interaction_times_list 66
+  ]
+  edge [
+    source 3
+    target 4
+    count 2
+    total_interaction_times 51
+    interaction_times_list 26
+    interaction_times_list 25
+  ]
+  edge [
+    source 4
+    target 3
+    count 2
+    total_interaction_times 98
+    interaction_times_list 71
+    interaction_times_list 27
+  ]
+  edge [
+    source 4
+    target 2
+    count 1
+    total_interaction_times 14
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 14
+  ]
+  edge [
+    source 4
+    target 5
+    count 1
+    total_interaction_times 40
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 40
+  ]
+  edge [
+    source 5
+    target 4
+    count 2
+    total_interaction_times 98
+    interaction_times_list 74
+    interaction_times_list 24
+  ]
+  edge [
+    source 5
+    target 3
+    count 2
+    total_interaction_times 102
+    interaction_times_list 88
+    interaction_times_list 14
+  ]
+  edge [
+    source 7
+    target 8
+    count 1
+    total_interaction_times 17
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 17
+  ]
+  edge [
+    source 8
+    target 7
+    count 1
+    total_interaction_times 432
+    interaction_times_list "_networkx_list_start"
+    interaction_times_list 432
+  ]
+]
