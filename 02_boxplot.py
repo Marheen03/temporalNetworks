@@ -50,15 +50,9 @@ for folder in folders:
     folder_path = snapshots_folder + folder
     treatments = os.listdir(folder_path)
     
-    folderName = folder_path.split("/")
-    if folderName[2] == "Cs_5DIZ":
-        type = "IZOLIRANE"
-    elif folderName[2] == "CS_10D":
-        type = "STARE"
-    else:
-        type = "MLADE"
+    labels = utils.get_labels(folder_path, "louvain", usingWeights)
     
-    if folderName[1][0] == "1":
+    if labels['snapshotSize'] == "10":
         key = 'Louvain, 10sec, bez težina'
     else:
         key = 'Louvain, 30sec, bez težina'
@@ -67,7 +61,7 @@ for folder in folders:
     for i, treatment in enumerate(treatments):
         path = folder_path + "/" + treatment
         snapshot_graphs = utils.load_files_from_folder(path, n_sort=True, file_format=".gml")
-        allFlies = utils.getAllFlies(numOfFlies)
+        allFlies = utils.get_all_flies(numOfFlies)
 
         snapshotsCommunities = []
         # for each snapshot
@@ -94,7 +88,7 @@ for folder in folders:
             communityOfNode = utils.get_community_of_node(communities, allFlies)
             communitiesDict.append(communityOfNode)
 
-        matrix = utils.getHeatMapData(communitiesDict, allFlies, negative=False)    
+        matrix = utils.get_heatmap_data(communitiesDict, allFlies, negative=False)    
         # get elements from matrix above diagonal
         upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
         values = upper_elements.tolist()
@@ -106,14 +100,13 @@ for folder in folders:
             dict.update({key1 : values})
     
     if accumulated:
-        cumulativeDict.update({type : coefficients})
+        cumulativeDict.update({labels["type"] : coefficients})
     else:
-        plot.plotBoxPlot(dict, type, directed, accumulated, key)
+        plot.plot_boxplot(dict, labels["type"], directed, accumulated, key)
 
 
 if accumulated:
-    plot.plotBoxPlot(cumulativeDict, key, directed, accumulated, key)
-
+    plot.plot_boxplot(cumulativeDict, key, directed, accumulated, key)
 
 """
 data = {
@@ -122,5 +115,5 @@ data = {
     '30sec, težine': w_30sec,
     '30sec, bez težine': nw_30sec
 }
-plot.plotBoxPlot(data, type, directed, accumulated)
+plot.plot_boxplot(data, labels["type"], directed, accumulated)
 """

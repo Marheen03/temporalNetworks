@@ -4,8 +4,8 @@ import numpy as np
 import seaborn as sb
 
 
-# creates histogram displaying community sizes for each snapshot
-def plotHistogram(dataset, type, labels):
+# create histogram displaying community sizes for each snapshot
+def plot_histogram(dataset, type, labels):
     _, _, bars = plt.hist(dataset, bins=range(1, max(dataset)+2),
                                align="left", edgecolor='black', linewidth=1.2)
     plt.xticks(range(1, max(dataset)+2))
@@ -32,8 +32,26 @@ def plotHistogram(dataset, type, labels):
     plt.show()
 
 
+# create grouped bar plot based on given data
+def plot_grouped_bar_plot(communitySizesAlg, groups):
+    x = np.arange(len(groups))  # the label locations
+    width = 0.4  # the width of the bars
+    
+    for i, array in enumerate(list(communitySizesAlg.values())):
+        if i==0:
+            position_shift = x-0.2
+        else:
+            position_shift = x+0.2
+
+        plt.bar(position_shift, array, width)
+
+    plt.xticks(x, groups)
+    plt.legend(list(communitySizesAlg.keys()))
+    plt.show()
+
+
 # create colormap for flies' community distribution
-def plotColorMap(communitiesDict, labels, id):
+def plot_colormap(communitiesDict, labels, id):
     # get unique fly names
     flies = list(communitiesDict[0].keys())
 
@@ -67,7 +85,7 @@ def plotColorMap(communitiesDict, labels, id):
 
 
 # create bar chart for flies in identical communities
-def plotBarChart(fliesInTop3, labels):
+def plot_bar_chart(fliesInTop3, labels):
     plt.bar(fliesInTop3.keys(), fliesInTop3.values())
     plt.title(labels["detectionAlgorithm"] + " - Najčešće mušice u istoj zajednici " + labels["weights"])
     
@@ -77,7 +95,7 @@ def plotBarChart(fliesInTop3, labels):
 
 
 # create heatmap for flies' preference
-def plotHeatMap(df, labels, negative):
+def plot_heatmap(df, labels, negative):
     if negative:
         num = -1
     else:
@@ -93,7 +111,7 @@ def plotHeatMap(df, labels, negative):
 
 
 # create boxplot for distribution visualization
-def plotBoxPlot(data, type, directed, accumulated, type1=''):
+def plot_boxplot(data, type, directed, accumulated, type1=''):
     """
     if multiple:
         fig, _ = plt.subplots(4, 5, figsize=(11, 8))

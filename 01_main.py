@@ -2,107 +2,127 @@ import utils, plot
 import networkx as nx
 import numpy as np
 import pandas as pd
+import os
 
 
 # configuration parameters
 numOfFlies = 12
-communityDetection = "louvain"
+communityDetectionAlgorithms = ["louvain", "girvan_newman"]
 usingWeights = True
-snapshots_folder = 'isolated/10sec/Cs_5DIZ'
 
-labels = utils.getLabels(snapshots_folder, communityDetection, usingWeights)
-if communityDetection == "girvan_newman":
-    print("("+ labels["type"] +") GIRVAN-NEWMANOV ALGORITAM - " + labels["weights"] + " - " + labels["snapshotSize"] + "sec\n")
-elif communityDetection == "louvain":
-    print("("+ labels["type"] +") LOUVAINOV ALGORITAM - " + labels["weights"] + " - snapshotovi od " + labels["snapshotSize"] + " sekundi\n")
+snapshots_folder = 'initial_networks/10_sec_window/'
+folders = os.listdir(snapshots_folder)
+allFlies = utils.get_all_flies(numOfFlies)
 
-# load all GML networks
-snapshot_graphs = utils.load_files_from_folder(snapshots_folder, n_sort=True, file_format=".gml")
-allFlies = utils.getAllFlies(numOfFlies)
+gn = []
+louvain = []
+groups = []
 
-numberOfCommunities = 0
-isolatedNodes = 0
-snapshots = 0
-maxCommunitySize = 0
-communitySizes = []
-numberOfIsolatedNodes = []
-snapshotsCommunities = []
+# for each group
+for folder in folders:
+    folder_path = snapshots_folder + folder
+    # load all GML networks
+    snapshot_graphs = utils.load_files_from_folder(folder_path, n_sort=True, file_format=".gml")
 
-# for each snapshot
-for i, graph_path in enumerate(snapshot_graphs.values()):
-    G = nx.read_gml(graph_path)
-    
-    if communityDetection == "girvan_newman":
-        if usingWeights:
-            communitiesIterator = nx.community.girvan_newman(G, utils.most_central_edge)
-        else:
-            communitiesIterator = nx.community.girvan_newman(G)
-        communitiesWithIsolatedNodes = list(sorted(c) for c in next(communitiesIterator))
+    # for each community detection algorithm
+    for communityDetection in communityDetectionAlgorithms:
+        print()
+        labels = utils.get_labels(folder_path, communityDetection, usingWeights)
+        if communityDetection == "girvan_newman":
+            algorithm = "GIRVAN-NEWMANOV ALGORITAM"
+        elif communityDetection == "louvain":
+            algorithm = "LOUVAINOV ALGORITAM"
+        print("("+ labels["type"] +") "+ algorithm +" - " + labels["weights"] + " - snapshotovi od " + labels["snapshotSize"] + " sekundi")
 
-        # communities without isolated nodes
-        communities = [community for community in communitiesWithIsolatedNodes if len(community) != 1]
-        isolatedCommunities = len(communitiesWithIsolatedNodes) - len(communities)
-        isolatedNodes += isolatedCommunities
+        numberOfCommunities = 0
+        isolatedNodes = 0
+        snapshots = 0
+        maxCommunitySize = 0
+        communitySizes = []
+        numberOfIsolatedNodes = []
+        snapshotsCommunities = []
 
-    elif communityDetection == "louvain":
-        if usingWeights:
-            communities = nx.community.louvain_communities(G, weight="count", seed=100)
-        else:
-            communities = nx.community.louvain_communities(G, seed=100)
-        isolatedCommunities = 0
+        # for each snapshot
+        for i, graph_path in enumerate(snapshot_graphs.values()):
+            G = nx.read_gml(graph_path)
+            
+            if communityDetection == "girvan_newman":
+                if usingWeights:
+                    communitiesIterator = nx.community.girvan_newman(G, utils.most_central_edge)
+                else:
+                    communitiesIterator = nx.community.girvan_newman(G)
+                communitiesWithIsolatedNodes = list(sorted(c) for c in next(communitiesIterator))
 
-    # finding the largest community
-    largestCommunity = len(max(communities, key=len))
-    maxCommunitySize = max(maxCommunitySize, largestCommunity)
+                # communities without isolated nodes
+                communities = [community for community in communitiesWithIsolatedNodes if len(community) != 1]
+                isolatedCommunities = len(communitiesWithIsolatedNodes) - len(communities)
+                isolatedNodes += isolatedCommunities
 
-    # counting number of found communities and isolated ones
-    numberOfCommunities += len(communities)
-    numOfIsolatedNodes = len(utils.find_isolated_nodes(communities, allFlies))
-    isolatedNodes += numOfIsolatedNodes
-    #print("{}. snapshot:".format(i+1), len(utils.find_isolated_nodes(communities)) + isolatedCommunities)
-    
-    # stores graph for each snapshot into an array
-    snapshotsCommunities.append(communities)
-    communitySizes.append(len(communities) - isolatedCommunities)
-    numberOfIsolatedNodes.append(numOfIsolatedNodes + isolatedCommunities)
-    snapshots += 1
+            elif communityDetection == "louvain":
+                if usingWeights:
+                    communities = nx.community.louvain_communities(G, weight="count", seed=100)
+                else:
+                    communities = nx.community.louvain_communities(G, seed=100)
+                isolatedCommunities = 0
 
-#plot.plotHistogram(communitySizes, 'community_size', labels)
-#plot.plotHistogram(numberOfIsolatedNodes, 'isolated_flies', labels)
+            # finding the largest community
+            largestCommunity = len(max(communities, key=len))
+            maxCommunitySize = max(maxCommunitySize, largestCommunity)
 
+            # counting number of found communities and isolated ones
+            numberOfCommunities += len(communities)
+            numOfIsolatedNodes = len(utils.find_isolated_nodes(communities, allFlies))
+            isolatedNodes += numOfIsolatedNodes
+            #print("{}. snapshot:".format(i+1), len(utils.find_isolated_nodes(communities)) + isolatedCommunities)
+            
+            # stores graph for each snapshot into an array
+            snapshotsCommunities.append(communities)
+            communitySizes.append(len(communities) - isolatedCommunities)
+            numberOfIsolatedNodes.append(numOfIsolatedNodes + isolatedCommunities)
+            snapshots += 1
 
-"""
-print("Ukupan broj zajednica:", numberOfCommunities)
-print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
-print("Duljina najveće zajednice:", maxCommunitySize)
+        #plot.plot_histogram(communitySizes, 'community_size', labels)
+        #plot.plot_histogram(numberOfIsolatedNodes, 'isolated_flies', labels)
+        
+        """
+        print("Ukupan broj zajednica:", numberOfCommunities)
+        print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
+        print("Duljina najveće zajednice:", maxCommunitySize)
 
-print("Ukupan broj izoliranih mušica:", isolatedNodes)
-print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
-"""
+        print("Ukupan broj izoliranih mušica:", isolatedNodes)
+        print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
+        """
+
+        if communityDetection == "girvan_newman":
+            gn.append(numberOfCommunities)
+        elif communityDetection == "louvain":
+            louvain.append(numberOfCommunities)
+        
+    groups.append(labels["type"])
+
+communitySizesAlg = {
+    'Girvan-Newman': gn,
+    'Louvain': louvain
+}
+plot.plot_grouped_bar_plot(communitySizesAlg, groups)
 
 """
 # makes snapshot IDs consistent
-consistent_snapshots = utils.track_consistent_communities(snapshotsCommunities)
-communitiesDict = []
-for i, communities in enumerate(consistent_snapshots):
-    communityOfNode = utils.get_community_of_node(communities, allFlies)
-    communitiesDict.append(communityOfNode)
-    
-    #print("{}. snapshot:".format(i+1), communityOfNode)
-    #print(f"Snapshot {i+1}: {communities}")
-
-#plot.plotColorMap(communitiesDict, labels)
+consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
+communitiesDict = utils.generate_community_dict(consistentSnapshots, allFlies)
+#plot.plot_colormap(communitiesDict, labels)
+print(communitiesDict)
 """
 
 
 """
-matrix = utils.getHeatMapData(communitiesDict, allFlies, negative=False)
+matrix = utils.get_heatmap_data(communitiesDict, allFlies, negative=False)
 # get elements from matrix above diagonal
 upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
 #print(upper_elements.tolist())
 
 #df = pd.DataFrame(matrix, allFlies, allFlies)
-#plot.plotHeatMap(df, labels, False)
+#plot.plot_heatmap(df, labels, False)
 """
 
 
@@ -120,5 +140,5 @@ for fly in allFlies:
         counter += 1
         if counter == 3:
             break
-plot.plotBarChart(fliesInTop3, labels) 
+plot.plot_bar_chart(fliesInTop3, labels) 
 """

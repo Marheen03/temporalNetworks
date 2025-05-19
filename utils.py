@@ -4,12 +4,12 @@ import numpy as np
 
 
 # returns appropriate labels for plots
-def getLabels(snapshots_folder, communityDetection, usingWeights):
+def get_labels(snapshots_folder, communityDetection, usingWeights):
     folderName = snapshots_folder.split("/")
 
-    if folderName[1] == '10sec':
+    if folderName[1][0] == '1':
         snapshot_size = "10"
-    elif folderName[1] == '30sec':
+    elif folderName[1][0] == '3':
         snapshot_size = "30"
     
     if communityDetection == "girvan_newman":
@@ -22,13 +22,12 @@ def getLabels(snapshots_folder, communityDetection, usingWeights):
     else:
         weights = "(BEZ TEŽINE)"
 
-    if folderName[0] == 'normal':
+    if folderName[2] == "Cs_5DIZ":
+        type = "IZOLIRANE"
+    elif folderName[2] == "Cs_10D":
+        type = "STARE"
+    else:
         type = "MLADE"
-    elif folderName[0] == 'isolated':
-        if folderName[2] == 'Cs_5DIZ':
-            type = "IZOLIRANE"
-        elif folderName[2] == 'CTRL10':
-            type = "STARE"
 
     return {
         "snapshotSize": snapshot_size,
@@ -39,7 +38,7 @@ def getLabels(snapshots_folder, communityDetection, usingWeights):
 
 
 # returns array containing all flies
-def getAllFlies(numOfFlies):
+def get_all_flies(numOfFlies):
     allFlies = []
     for i in range(numOfFlies):
         flyString = 'fly' + str(i+1)
@@ -99,12 +98,11 @@ def find_isolated_nodes(communities, allFlies):
 
     Parameters:
     communities (list): List of communities represented as sets.
-    allFlies (array): Array of fly names.
+    allFlies (list): List of fly names.
 
     Returns:
     set: Set containing isolated nodes (flies).
     """
-
     allFlies = set(allFlies)
 
     currentCommunity = set()
@@ -114,30 +112,6 @@ def find_isolated_nodes(communities, allFlies):
     
     isolatedNodes = allFlies.difference(currentCommunity)
     return isolatedNodes
-
-
-def get_community_of_node(communities, allFlies):
-    """
-    Returns community ID in which given node is part of.
-
-    Parameters:
-    communities (list): List of communities represented as sets.
-    allFlies (array): Array of fly names.
-
-    Returns:
-    dict: flies as keys and community ID as values (0 if node isn't part of community).
-    """
-    communityOfNode = {}
-    for fly in allFlies:
-        communityOfNode[fly] = 0
-        
-        for i, community in enumerate(communities):
-            # check if fly is within certain community
-            if fly in community:
-                communityOfNode[fly] = i+1
-                break
-    
-    return communityOfNode
 
 
 # computes Jaccard similarity between two sets.
@@ -154,7 +128,7 @@ def track_consistent_communities(snapshots, similarity_threshold=0.5):
     similarity_threshold (float): Jaccard similarity threshold for matching communities.
     
     Returns:
-    array: List of snapshots with consistent community IDs.
+    list: List of snapshots with consistent community IDs.
     """
     community_mapping = {}  # Maps snapshot index -> old community ID -> new consistent ID
     last_assigned_id = 0    # Counter for community IDs
@@ -163,7 +137,7 @@ def track_consistent_communities(snapshots, similarity_threshold=0.5):
         current_mapping = {}  # Mapping for this snapshot
         community_sets = [set(comm) for comm in communities]  # Convert to sets for comparison
         
-        if t == 0:
+        if t==0:
             # Assign initial IDs in the first snapshot
             for i, comm in enumerate(community_sets):
                 current_mapping[i] = last_assigned_id
@@ -207,6 +181,50 @@ def track_consistent_communities(snapshots, similarity_threshold=0.5):
     return new_snapshots
 
 
+def get_community_of_node(communities, allFlies):
+    """
+    Returns community ID in which given node is part of.
+
+    Parameters:
+    communities (list): List of communities represented as sets.
+    allFlies (list): List of fly names.
+
+    Returns:
+    dict: Flies as keys and community ID as values (0 if node isn't part of community).
+    """
+    communityOfNode = {}
+    for fly in allFlies:
+        communityOfNode[fly] = 0
+        
+        for i, community in enumerate(communities):
+            # check if fly is within certain community
+            if fly in community:
+                communityOfNode[fly] = i+1
+                break
+    
+    return communityOfNode
+
+
+def generate_community_dict(consistentSnapshots, allFlies):
+    """
+    Returns community dictionary containing community IDs for each fly.
+
+    Parameters:
+    consistentSnapshots (list): List of snapshots with consistent community IDs.
+    allFlies (list): List of fly names.
+
+    Returns:
+    list: List of community distributions for each snapshot.
+    """
+    communitiesDict = []
+
+    for i, communities in enumerate(consistentSnapshots):
+        communityOfNode = get_community_of_node(communities, allFlies)
+        communitiesDict.append(communityOfNode)
+    
+    return communitiesDict
+
+
 def shared_communites(fly, communitiesDict, allFlies):
     """
     Counts occurences when chosen fly was in identical community with all flies
@@ -215,7 +233,7 @@ def shared_communites(fly, communitiesDict, allFlies):
     Parameters:
     fly (string): List of snapshots (each snapshot is a list of communities).
     communitiesDict (array): Array of community distributions for each snapshot.
-    allFlies (array): Array containing names of all flies.
+    allFlies (list): List containing names of all flies.
     
     Returns:
     dict: Flies as keys and number of occurences in the same community as values.
@@ -235,14 +253,14 @@ def shared_communites(fly, communitiesDict, allFlies):
     return mutual_flies
 
 
-def getHeatMapData(communitiesDict, allFlies, negative):
+def get_heatmap_data(communitiesDict, allFlies, negative):
     """
     Creates NumPy array which can be used to create heatmap
     for visualizing preferences of flies' common communities.
 
     Parameters:
-    communitiesDict (array): Array of community distributions for each snapshot.
-    allFlies (array): Array containing names of all flies.
+    communitiesDict (list): List of community distributions for each snapshot.
+    allFlies (list): List containing names of all flies.
     negative (bool): Determines whether or not to set the least element of interval to -1 or 0.
     
     Returns:
