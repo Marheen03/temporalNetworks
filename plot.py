@@ -33,11 +33,11 @@ def plot_histogram(dataset, type, labels):
 
 
 # create grouped bar plot based on given data
-def plot_grouped_bar_plot(communitySizesAlg, groups):
+def plot_grouped_bar_plot(measuresDict, groups, labels, type):
     x = np.arange(len(groups))  # the label locations
     width = 0.4  # the width of the bars
     
-    for i, array in enumerate(list(communitySizesAlg.values())):
+    for i, array in enumerate(list(measuresDict.values())):
         if i==0:
             position_shift = x-0.2
         else:
@@ -45,8 +45,32 @@ def plot_grouped_bar_plot(communitySizesAlg, groups):
 
         plt.bar(position_shift, array, width)
 
+        # add labels on top of bars
+        for xpos, height in zip(position_shift, array):
+            plt.text(xpos, height + 0.1, str(height),
+                     ha='center', va='bottom', fontsize=10)
+
     plt.xticks(x, groups)
-    plt.legend(list(communitySizesAlg.keys()))
+    plt.legend(
+        list(measuresDict.keys()),
+        bbox_to_anchor=(1.05, 1), 
+        loc='upper left',
+        title='Algoritmi',
+        borderaxespad=0.
+    )
+    
+    plt.xlabel('Grupe ('+ labels["snapshotSize"] +' sekundi)')
+    if type==1:
+        plt.ylabel('Broj otkrivenih zajednica')
+        plt.title("Broj otkrivenih zajednica po algoritmima "+ labels["weights"])
+    elif type==2:
+        plt.ylabel('Broj izoliranih mušica')
+        plt.title("Broj izoliranih mušica po algoritmima "+ labels["weights"])
+    else:
+        plt.ylabel('Veličina najveće zajednice')
+        plt.title("Veličina najveće zajednice po algoritmima "+ labels["weights"])
+
+    plt.tight_layout()
     plt.show()
 
 

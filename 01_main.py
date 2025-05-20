@@ -35,7 +35,7 @@ for folder in folders:
         print("("+ labels["type"] +") "+ algorithm +" - " + labels["weights"] + " - snapshotovi od " + labels["snapshotSize"] + " sekundi")
 
         numberOfCommunities = 0
-        isolatedNodes = 0
+        isolatedFlies = 0
         snapshots = 0
         maxCommunitySize = 0
         communitySizes = []
@@ -43,7 +43,7 @@ for folder in folders:
         snapshotsCommunities = []
 
         # for each snapshot
-        for i, graph_path in enumerate(snapshot_graphs.values()):
+        for graph_path in snapshot_graphs.values():
             G = nx.read_gml(graph_path)
             
             if communityDetection == "girvan_newman":
@@ -56,7 +56,7 @@ for folder in folders:
                 # communities without isolated nodes
                 communities = [community for community in communitiesWithIsolatedNodes if len(community) != 1]
                 isolatedCommunities = len(communitiesWithIsolatedNodes) - len(communities)
-                isolatedNodes += isolatedCommunities
+                isolatedFlies += isolatedCommunities
 
             elif communityDetection == "louvain":
                 if usingWeights:
@@ -72,8 +72,7 @@ for folder in folders:
             # counting number of found communities and isolated ones
             numberOfCommunities += len(communities)
             numOfIsolatedNodes = len(utils.find_isolated_nodes(communities, allFlies))
-            isolatedNodes += numOfIsolatedNodes
-            #print("{}. snapshot:".format(i+1), len(utils.find_isolated_nodes(communities)) + isolatedCommunities)
+            isolatedFlies += numOfIsolatedNodes
             
             # stores graph for each snapshot into an array
             snapshotsCommunities.append(communities)
@@ -85,60 +84,52 @@ for folder in folders:
         #plot.plot_histogram(numberOfIsolatedNodes, 'isolated_flies', labels)
         
         """
-        print("Ukupan broj zajednica:", numberOfCommunities)
-        print("Prosječan broj zajednica:", numberOfCommunities / snapshots)
-        print("Duljina najveće zajednice:", maxCommunitySize)
+        # makes snapshot IDs consistent
+        consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
+        communitiesDict = utils.generate_community_dict(consistentSnapshots, allFlies)
+        #plot.plot_colormap(communitiesDict, labels)
+        print(communitiesDict)
+        """
 
-        print("Ukupan broj izoliranih mušica:", isolatedNodes)
-        print("Prosječan broj izoliranih mušica:", isolatedNodes / snapshots)
+
+        """
+        matrix = utils.get_heatmap_data(communitiesDict, allFlies, negative=False)
+        # get elements from matrix above diagonal
+        upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
+        #print(upper_elements.tolist())
+
+        #df = pd.DataFrame(matrix, allFlies, allFlies)
+        #plot.plot_heatmap(df, labels, False)
+        """
+
+
+        """
+        fliesInTop3 = {key : 0 for key in allFlies}
+        for fly in allFlies:
+            sharedCommunities = utils.shared_communites(fly, communitiesDict, allFlies)
+            # Sort based on Values
+            sharedCommunitiesSorted = {k : v for k, v in sorted(sharedCommunities.items(), key=lambda item: item[1], reverse=True)}
+            
+            counter = 0
+            for k in sharedCommunitiesSorted.keys():
+                fliesInTop3[k] += 1
+
+                counter += 1
+                if counter == 3:
+                    break
+        plot.plot_bar_chart(fliesInTop3, labels) 
         """
 
         if communityDetection == "girvan_newman":
-            gn.append(numberOfCommunities)
+            gn.append(maxCommunitySize)
         elif communityDetection == "louvain":
-            louvain.append(numberOfCommunities)
+            louvain.append(maxCommunitySize)
         
     groups.append(labels["type"])
 
-communitySizesAlg = {
+
+measuresDict = {
     'Girvan-Newman': gn,
     'Louvain': louvain
 }
-plot.plot_grouped_bar_plot(communitySizesAlg, groups)
-
-"""
-# makes snapshot IDs consistent
-consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
-communitiesDict = utils.generate_community_dict(consistentSnapshots, allFlies)
-#plot.plot_colormap(communitiesDict, labels)
-print(communitiesDict)
-"""
-
-
-"""
-matrix = utils.get_heatmap_data(communitiesDict, allFlies, negative=False)
-# get elements from matrix above diagonal
-upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
-#print(upper_elements.tolist())
-
-#df = pd.DataFrame(matrix, allFlies, allFlies)
-#plot.plot_heatmap(df, labels, False)
-"""
-
-
-"""
-fliesInTop3 = {key : 0 for key in allFlies}
-for fly in allFlies:
-    sharedCommunities = utils.shared_communites(fly, communitiesDict, allFlies)
-    # Sort based on Values
-    sharedCommunitiesSorted = {k : v for k, v in sorted(sharedCommunities.items(), key=lambda item: item[1], reverse=True)}
-    
-    counter = 0
-    for k in sharedCommunitiesSorted.keys():
-        fliesInTop3[k] += 1
-
-        counter += 1
-        if counter == 3:
-            break
-plot.plot_bar_chart(fliesInTop3, labels) 
-"""
+plot.plot_grouped_bar_plot(measuresDict, groups, labels, 3)
