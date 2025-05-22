@@ -10,7 +10,7 @@ numOfFlies = 12
 communityDetectionAlgorithms = ["louvain", "girvan_newman"]
 usingWeights = True
 
-snapshots_folder = 'initial_networks/10_sec_window/'
+snapshots_folder = 'initial_networks/30_sec_window/'
 folders = os.listdir(snapshots_folder)
 allFlies = utils.get_all_flies(numOfFlies)
 
@@ -56,8 +56,6 @@ for folder in folders:
                 # communities without isolated nodes
                 communities = [community for community in communitiesWithIsolatedNodes if len(community) != 1]
                 isolatedCommunities = len(communitiesWithIsolatedNodes) - len(communities)
-                isolatedFlies += isolatedCommunities
-
             elif communityDetection == "louvain":
                 if usingWeights:
                     communities = nx.community.louvain_communities(G, weight="count", seed=100)
@@ -72,17 +70,22 @@ for folder in folders:
             # counting number of found communities and isolated ones
             numberOfCommunities += len(communities)
             numOfIsolatedNodes = len(utils.find_isolated_nodes(communities, allFlies))
-            isolatedFlies += numOfIsolatedNodes
+            isolatedFlies += numOfIsolatedNodes + isolatedCommunities
             
             # stores graph for each snapshot into an array
             snapshotsCommunities.append(communities)
-            communitySizes.append(len(communities) - isolatedCommunities)
+            communitySizes.append(len(communities))
             numberOfIsolatedNodes.append(numOfIsolatedNodes + isolatedCommunities)
+
+            # histogram
+            if communityDetection == "girvan_newman":
+                #len(communities)
+                gn.append(numOfIsolatedNodes + isolatedCommunities)
+            elif communityDetection == "louvain":
+                louvain.append(numOfIsolatedNodes + isolatedCommunities)
+            
             snapshots += 1
 
-        #plot.plot_histogram(communitySizes, 'community_size', labels)
-        #plot.plot_histogram(numberOfIsolatedNodes, 'isolated_flies', labels)
-        
         """
         # makes snapshot IDs consistent
         consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
@@ -120,16 +123,22 @@ for folder in folders:
         plot.plot_bar_chart(fliesInTop3, labels) 
         """
 
+        """
+        # grouped bar chart
         if communityDetection == "girvan_newman":
-            gn.append(maxCommunitySize)
+            gn.append(numberOfCommunities)
         elif communityDetection == "louvain":
-            louvain.append(maxCommunitySize)
+            louvain.append(numberOfCommunities)
+        """
         
     groups.append(labels["type"])
 
 
 measuresDict = {
-    'Girvan-Newman': gn,
+    'Girvan-Newman': gn, 
     'Louvain': louvain
 }
-plot.plot_grouped_bar_plot(measuresDict, groups, labels, 3)
+#print(measuresDict)
+plot.plot_histogram(groups, measuresDict, 2, labels, snapshots)
+
+#plot.plot_grouped_bar(measuresDict, groups, labels, 1, snapshots)

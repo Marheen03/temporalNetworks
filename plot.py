@@ -2,38 +2,52 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 import seaborn as sb
+import pandas as pd
+from matplotlib import patches as mpatches
 
 
-# create histogram displaying community sizes for each snapshot
-def plot_histogram(dataset, type, labels):
-    _, _, bars = plt.hist(dataset, bins=range(1, max(dataset)+2),
-                               align="left", edgecolor='black', linewidth=1.2)
-    plt.xticks(range(1, max(dataset)+2))
-    
-    # extract heights of the bars
-    heights = [bar.get_height() for bar in bars]
-    total = sum(heights)  # total count
-    
-    # add labels with both count and percentage
-    for bar, height in zip(bars, heights):
-        if height > 0:
-            plt.text(bar.get_x() + bar.get_width() / 2, height, 
-                    f'{int(height)} ({(height / total * 100):.1f}%)', 
-                    ha='center', va='bottom')
+# create histograms
+def plot_histogram(groups, measuresDict, type, labels, snapshots):
+    x = [groups[0]]*snapshots + [groups[1]]*snapshots + [groups[2]]*snapshots
+    measures = list(measuresDict.values())
+    df = pd.DataFrame({
+        'Grupa':x, 'Girvan-Newman':measures[0], 'Louvain':measures[1]
+    })
 
-    if type == 'community_size':
-        plt.title(labels["detectionAlgorithm"] + " - histogram veličina zajednica " + labels["weights"])
-        plt.xlabel("Veličina zajednica (" + labels["type"] + ")")
-    elif type == 'isolated_flies':
-        plt.title(labels["detectionAlgorithm"] + " - histogram izoliranih mušica " + labels["weights"])
-        plt.xlabel("Broj izoliranih mušica (" + labels["type"] + ")")
+    # Plot histograms
+    axes = df.hist(['Girvan-Newman','Louvain'], by='Grupa',
+        layout=(2, 2), xrot=0,
+        figsize=(8, 10), rwidth=1)
 
-    plt.ylabel("Broj snapshotova (" + labels["snapshotSize"] + " sekundi)")
+    for ax in axes.flatten():
+        if type == 1:
+            plt.title("Histogram veličina zajednica " + labels["weights"])
+        else:
+            plt.title("Histogram izoliranih mušica " + labels["weights"])
+        ax.set_xlabel("Veličina zajednica (" + labels["snapshotSize"] + " sekundi)")
+        ax.set_ylabel("Broj snimki mreže")
+        ax.set_ylim(bottom=0, top=80)
+
+        # display count values on top of each bar
+        for bar in ax.patches:
+            height = bar.get_height()
+            if height > 0:
+                ax.annotate(f'{int(height)}',
+                            xy=(bar.get_x() + bar.get_width() / 2, height),
+                            xytext=(-1, 1),
+                            textcoords="offset points",
+                            ha='center', va='bottom',
+                            fontsize=9)
+
+    if type == 1:
+        plt.suptitle("Histogram broja otkrivenih zajednica " + labels["weights"])
+    else:
+        plt.suptitle("Histogram izoliranih mušica " + labels["weights"])
     plt.show()
 
 
 # create grouped bar plot based on given data
-def plot_grouped_bar_plot(measuresDict, groups, labels, type):
+def plot_grouped_bar(measuresDict, groups, labels, type, snapshots):
     x = np.arange(len(groups))  # the label locations
     width = 0.4  # the width of the bars
     
@@ -45,18 +59,17 @@ def plot_grouped_bar_plot(measuresDict, groups, labels, type):
 
         plt.bar(position_shift, array, width)
 
-        # add labels on top of bars
+        # add labels on top of bars: count (percentage %)
         for xpos, height in zip(position_shift, array):
-            plt.text(xpos, height + 0.1, str(height),
-                     ha='center', va='bottom', fontsize=10)
+            average = height / snapshots
+            plt.text(xpos, height + 0.1, f"{int(height)} ({average:.2f})",
+                     ha='center', va='bottom', fontsize=9)
 
     plt.xticks(x, groups)
     plt.legend(
         list(measuresDict.keys()),
-        bbox_to_anchor=(1.05, 1), 
-        loc='upper left',
+        loc='lower right',
         title='Algoritmi',
-        borderaxespad=0.
     )
     
     plt.xlabel('Grupe ('+ labels["snapshotSize"] +' sekundi)')
