@@ -6,46 +6,6 @@ import pandas as pd
 from matplotlib import patches as mpatches
 
 
-# create histograms
-def plot_histogram(groups, measuresDict, type, labels, snapshots):
-    x = [groups[0]]*snapshots + [groups[1]]*snapshots + [groups[2]]*snapshots
-    measures = list(measuresDict.values())
-    df = pd.DataFrame({
-        'Grupa':x, 'Girvan-Newman':measures[0], 'Louvain':measures[1]
-    })
-
-    # Plot histograms
-    axes = df.hist(['Girvan-Newman','Louvain'], by='Grupa',
-        layout=(2, 2), xrot=0,
-        figsize=(8, 10), rwidth=1)
-
-    for ax in axes.flatten():
-        if type == 1:
-            plt.title("Histogram veličina zajednica " + labels["weights"])
-        else:
-            plt.title("Histogram izoliranih mušica " + labels["weights"])
-        ax.set_xlabel("Veličina zajednica (" + labels["snapshotSize"] + " sekundi)")
-        ax.set_ylabel("Broj snimki mreže")
-        ax.set_ylim(bottom=0, top=80)
-
-        # display count values on top of each bar
-        for bar in ax.patches:
-            height = bar.get_height()
-            if height > 0:
-                ax.annotate(f'{int(height)}',
-                            xy=(bar.get_x() + bar.get_width() / 2, height),
-                            xytext=(-1, 1),
-                            textcoords="offset points",
-                            ha='center', va='bottom',
-                            fontsize=9)
-
-    if type == 1:
-        plt.suptitle("Histogram broja otkrivenih zajednica " + labels["weights"])
-    else:
-        plt.suptitle("Histogram izoliranih mušica " + labels["weights"])
-    plt.show()
-
-
 # create grouped bar plot based on given data
 def plot_grouped_bar(measuresDict, groups, labels, type, snapshots):
     x = np.arange(len(groups))  # the label locations
@@ -79,45 +39,83 @@ def plot_grouped_bar(measuresDict, groups, labels, type, snapshots):
     elif type==2:
         plt.ylabel('Broj izoliranih mušica')
         plt.title("Broj izoliranih mušica po algoritmima "+ labels["weights"])
-    else:
-        plt.ylabel('Veličina najveće zajednice')
-        plt.title("Veličina najveće zajednice po algoritmima "+ labels["weights"])
 
     plt.tight_layout()
     plt.show()
 
 
-# create colormap for flies' community distribution
-def plot_colormap(communitiesDict, labels, id):
-    # get unique fly names
-    flies = list(communitiesDict[0].keys())
+# create histograms
+def plot_histogram(groups, measuresDict, type, labels, snapshots):
+    x = [groups[0]]*snapshots + [groups[1]]*snapshots + [groups[2]]*snapshots
+    measures = list(measuresDict.values())
+    df = pd.DataFrame({
+        'Grupa':x, 'Girvan-Newman':measures[0], 'Louvain':measures[1]
+    })
 
-    # convert snapshots into a 2D NumPy array (shape: 12 flies x 120 snapshots)
-    data_matrix = np.array([[snapshot[fly] for snapshot in communitiesDict] for fly in flies])
+    # Plot histograms
+    axes = df.hist(['Girvan-Newman','Louvain'], by='Grupa',
+        layout=(2, 2), xrot=0,
+        figsize=(8, 10), rwidth=1)
+
+    for ax in axes.flatten():
+        if type == 1:
+            plt.title("Histogram veličina zajednica " + labels["weights"])
+        elif type == 2:
+            plt.title("Histogram izoliranih mušica " + labels["weights"])
+        ax.set_xlabel("Veličina zajednica (" + labels["snapshotSize"] + " sekundi)")
+        ax.set_ylabel("Broj snimki mreže")
+        ax.set_ylim(bottom=0, top=80)
+
+        # display count values on top of each bar
+        for bar in ax.patches:
+            height = bar.get_height()
+            if height > 0:
+                ax.annotate(f'{int(height)}',
+                            xy=(bar.get_x() + bar.get_width() / 2, height),
+                            xytext=(-1, 1),
+                            textcoords="offset points",
+                            ha='center', va='bottom',
+                            fontsize=9)
+
+    if type == 1:
+        plt.suptitle("Histogram broja otkrivenih zajednica " + labels["weights"])
+    elif type == 2:
+        plt.suptitle("Histogram izoliranih mušica " + labels["weights"])
+    plt.show()
+
+
+# create colormap for flies' community distribution
+def plot_colormap(communitiesDicts, labels, allFlies):
+    # convert snapshots into a 2D NumPy array (shape: number of flies x number of snapshots)
+    data_matrix = np.array([[snapshot[fly] for snapshot in communitiesDicts] for fly in allFlies])
 
     # create the colormap
     plt.figure(figsize=(12, 6))
-    cmap = plt.get_cmap("tab10", np.max(data_matrix) + 2)  # adjust colors to match community IDs
+    cmap = plt.get_cmap("tab10", np.max(data_matrix) + 1)  # adjust colors to match community IDs
     plt.imshow(data_matrix, aspect="auto", cmap=cmap)
 
-    # Labels and formatting
-    ticksX = np.arange(0, len(communitiesDict)+1, step=10)
+    # labels and formatting
+    ticksX = np.arange(0, len(communitiesDicts)+1, step=10)
     ticksX[0] += 1
     plt.xticks(ticks=ticksX, labels=ticksX)
-    plt.yticks(ticks=np.arange(len(flies)), labels=flies)
+    plt.yticks(ticks=np.arange(len(allFlies)), labels=allFlies)
 
-    plt.xlabel("Snapshotovi (" + labels["snapshotSize"] + " sekundi)")
-    plt.ylabel("Vinske mušice (" + labels["type"] + ")")
-    plt.title(labels["detectionAlgorithm"] + " - Pripadnost mušica zajednicama kroz vrijeme " + labels["weights"])
+    plt.xlabel("Redni broj snimka mreže (" + labels["snapshotSize"] + " sekundi)")
+    plt.ylabel("Nazivi mušica")
+    plt.title(
+        labels["detectionAlgorithm"] +
+        " - Pripadnost mušica zajednicama kroz vrijeme " +
+        labels["weights"] + " (" + labels["type"] + ")"
+    )
 
-    # modify the label for Community 0
-    community_ids = np.unique(data_matrix)  # Unique community IDs
+    # modify the label for community 0 (isolated node)
+    community_ids = np.unique(data_matrix)
     labels = [f"Izolirana mušica" if i == 0 else f"{i}. zajednica" for i in community_ids]
     patches = [mpatches.Patch(color=cmap(i), label=labels[idx]) for idx, i in enumerate(community_ids)]
 
     # create a legend mapping community IDs to colors
     plt.legend(handles=patches, title="Zajednice", bbox_to_anchor=(1, 1), loc="upper left")
-    plt.tight_layout(rect=[0.01, 0, 0.97, 1])  # Adjust the paddings
+    plt.tight_layout(rect=[0.01, 0, 0.97, 1])  # adjust the paddings
     plt.show()
 
 

@@ -216,13 +216,13 @@ def generate_community_dict(consistentSnapshots, allFlies):
     Returns:
     list: List of community distributions for each snapshot.
     """
-    communitiesDict = []
+    communitiesDicts = []
 
-    for i, communities in enumerate(consistentSnapshots):
+    for communities in consistentSnapshots:
         communityOfNode = get_community_of_node(communities, allFlies)
-        communitiesDict.append(communityOfNode)
+        communitiesDicts.append(communityOfNode)
     
-    return communitiesDict
+    return communitiesDicts
 
 
 def shared_communites(fly, communitiesDict, allFlies):

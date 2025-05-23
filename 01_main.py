@@ -7,7 +7,7 @@ import os
 
 # configuration parameters
 numOfFlies = 12
-communityDetectionAlgorithms = ["louvain", "girvan_newman"]
+communityDetectionAlgorithms = ["louvain"]
 usingWeights = True
 
 snapshots_folder = 'initial_networks/30_sec_window/'
@@ -77,26 +77,25 @@ for folder in folders:
             communitySizes.append(len(communities))
             numberOfIsolatedNodes.append(numOfIsolatedNodes + isolatedCommunities)
 
+            """
             # histogram
             if communityDetection == "girvan_newman":
                 #len(communities)
                 gn.append(numOfIsolatedNodes + isolatedCommunities)
             elif communityDetection == "louvain":
                 louvain.append(numOfIsolatedNodes + isolatedCommunities)
+            """
             
             snapshots += 1
 
-        """
         # makes snapshot IDs consistent
         consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
-        communitiesDict = utils.generate_community_dict(consistentSnapshots, allFlies)
-        #plot.plot_colormap(communitiesDict, labels)
-        print(communitiesDict)
-        """
+        communitiesDicts = utils.generate_community_dict(consistentSnapshots, allFlies)
+        plot.plot_colormap(communitiesDicts, labels, allFlies)
 
 
         """
-        matrix = utils.get_heatmap_data(communitiesDict, allFlies, negative=False)
+        matrix = utils.get_heatmap_data(communitiesDicts, allFlies, negative=False)
         # get elements from matrix above diagonal
         upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
         #print(upper_elements.tolist())
@@ -109,7 +108,7 @@ for folder in folders:
         """
         fliesInTop3 = {key : 0 for key in allFlies}
         for fly in allFlies:
-            sharedCommunities = utils.shared_communites(fly, communitiesDict, allFlies)
+            sharedCommunities = utils.shared_communites(fly, communitiesDicts, allFlies)
             # Sort based on Values
             sharedCommunitiesSorted = {k : v for k, v in sorted(sharedCommunities.items(), key=lambda item: item[1], reverse=True)}
             
@@ -131,14 +130,14 @@ for folder in folders:
             louvain.append(numberOfCommunities)
         """
         
-    groups.append(labels["type"])
+    #groups.append(labels["type"])
 
 
+"""
 measuresDict = {
     'Girvan-Newman': gn, 
     'Louvain': louvain
 }
-#print(measuresDict)
-plot.plot_histogram(groups, measuresDict, 2, labels, snapshots)
-
+#plot.plot_histogram(groups, measuresDict, 2, labels, snapshots)
 #plot.plot_grouped_bar(measuresDict, groups, labels, 1, snapshots)
+"""
