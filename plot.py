@@ -50,9 +50,15 @@ def plot_histogram(measuresDict, type, labels, snapshots):
 
     for i, (group, data) in enumerate(measuresDict.items()):
         plt.subplot(1, 3, i+1)
-        _, _, bars = plt.hist(data, bins=range(1, max(data)+2),
+
+        if type == 1:
+            minValue = 1
+        elif type == 2:
+            minValue = 0
+
+        _, _, bars = plt.hist(data, bins=range(minValue, max(data)+2),
                                align="left", edgecolor='black', linewidth=1.2)
-        plt.xticks(range(1, max(data)+2))
+        plt.xticks(range(minValue, max(data)+2))
         
         # extract heights of the bars
         heights = [bar.get_height() for bar in bars]
@@ -61,9 +67,9 @@ def plot_histogram(measuresDict, type, labels, snapshots):
             if height > 0:
                 plt.text(
                     bar.get_x() + bar.get_width() / 2,
-                    height + 0.8, 
+                    height, 
                     f'{int(height)} ({(height / snapshots * 100):.1f}%)', 
-                    ha='center', va='bottom', fontsize=7
+                    ha='center', va='bottom'
                 )
         plt.title(group)
 
