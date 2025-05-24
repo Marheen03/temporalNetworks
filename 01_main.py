@@ -6,23 +6,24 @@ import os
 
 
 # configuration parameters
-numOfFlies = 12
 communityDetectionAlgorithms = ["louvain"]
 usingWeights = True
 
-snapshots_folder = 'initial_networks/30_sec_window/'
+snapshots_folder = 'initial_networks/10_sec_window/'
 folders = os.listdir(snapshots_folder)
-allFlies = utils.get_all_flies(numOfFlies)
+allFlies = utils.get_all_flies(numOfFlies = 12)
 
-gn = []
-louvain = []
+#gn = []
+#louvain = []
 groups = []
+histDict = {}
 
 # for each group
 for folder in folders:
     folder_path = snapshots_folder + folder
     # load all GML networks
     snapshot_graphs = utils.load_files_from_folder(folder_path, n_sort=True, file_format=".gml")
+    histData = []
 
     # for each community detection algorithm
     for communityDetection in communityDetectionAlgorithms:
@@ -77,21 +78,26 @@ for folder in folders:
             communitySizes.append(len(communities))
             numberOfIsolatedNodes.append(numOfIsolatedNodes + isolatedCommunities)
 
-            """
             # histogram
-            if communityDetection == "girvan_newman":
-                #len(communities)
-                gn.append(numOfIsolatedNodes + isolatedCommunities)
-            elif communityDetection == "louvain":
-                louvain.append(numOfIsolatedNodes + isolatedCommunities)
-            """
-            
+            #ISOLATED NODES:  numOfIsolatedNodes + isolatedCommunities
+            #COMMUNITY LENGTH:  len(communities)
+            histData.append(len(communities))
             snapshots += 1
 
-        # makes snapshot IDs consistent
+
+        """
+        # grouped bar chart
+        if communityDetection == "girvan_newman":
+            gn.append(numberOfCommunities)
+        elif communityDetection == "louvain":
+            louvain.append(numberOfCommunities)
+        """
+
+        """
         consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
         communitiesDicts = utils.generate_community_dict(consistentSnapshots, allFlies)
         plot.plot_colormap(communitiesDicts, labels, allFlies)
+        """
 
 
         """
@@ -121,23 +127,18 @@ for folder in folders:
                     break
         plot.plot_bar_chart(fliesInTop3, labels) 
         """
-
-        """
-        # grouped bar chart
-        if communityDetection == "girvan_newman":
-            gn.append(numberOfCommunities)
-        elif communityDetection == "louvain":
-            louvain.append(numberOfCommunities)
-        """
-        
+    
+    # grouped bar
     #groups.append(labels["type"])
-
+    histDict.update({labels["type"]: histData})
 
 """
+# grouped bar
 measuresDict = {
     'Girvan-Newman': gn, 
     'Louvain': louvain
 }
-#plot.plot_histogram(groups, measuresDict, 2, labels, snapshots)
 #plot.plot_grouped_bar(measuresDict, groups, labels, 1, snapshots)
 """
+
+plot.plot_histogram(histDict, 1, labels, snapshots)

@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 import seaborn as sb
-import pandas as pd
 from matplotlib import patches as mpatches
 
 
@@ -45,42 +44,39 @@ def plot_grouped_bar(measuresDict, groups, labels, type, snapshots):
 
 
 # create histograms
-def plot_histogram(groups, measuresDict, type, labels, snapshots):
-    x = [groups[0]]*snapshots + [groups[1]]*snapshots + [groups[2]]*snapshots
-    measures = list(measuresDict.values())
-    df = pd.DataFrame({
-        'Grupa':x, 'Girvan-Newman':measures[0], 'Louvain':measures[1]
-    })
+def plot_histogram(measuresDict, type, labels, snapshots):
+    fig, _ = plt.subplots(1, 3, figsize=(15, 5))
+    fig.tight_layout(pad=4)
 
-    # Plot histograms
-    axes = df.hist(['Girvan-Newman','Louvain'], by='Grupa',
-        layout=(2, 2), xrot=0,
-        figsize=(8, 10), rwidth=1)
-
-    for ax in axes.flatten():
-        if type == 1:
-            plt.title("Histogram veličina zajednica " + labels["weights"])
-        elif type == 2:
-            plt.title("Histogram izoliranih mušica " + labels["weights"])
-        ax.set_xlabel("Veličina zajednica (" + labels["snapshotSize"] + " sekundi)")
-        ax.set_ylabel("Broj snimki mreže")
-        ax.set_ylim(bottom=0, top=80)
-
-        # display count values on top of each bar
-        for bar in ax.patches:
-            height = bar.get_height()
+    for i, (group, data) in enumerate(measuresDict.items()):
+        plt.subplot(1, 3, i+1)
+        _, _, bars = plt.hist(data, bins=range(1, max(data)+2),
+                               align="left", edgecolor='black', linewidth=1.2)
+        plt.xticks(range(1, max(data)+2))
+        
+        # extract heights of the bars
+        heights = [bar.get_height() for bar in bars]
+        # add labels with both count and percentage
+        for bar, height in zip(bars, heights):
             if height > 0:
-                ax.annotate(f'{int(height)}',
-                            xy=(bar.get_x() + bar.get_width() / 2, height),
-                            xytext=(-1, 1),
-                            textcoords="offset points",
-                            ha='center', va='bottom',
-                            fontsize=9)
+                plt.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    height + 0.8, 
+                    f'{int(height)} ({(height / snapshots * 100):.1f}%)', 
+                    ha='center', va='bottom', fontsize=7
+                )
+        plt.title(group)
 
     if type == 1:
-        plt.suptitle("Histogram broja otkrivenih zajednica " + labels["weights"])
+        plt.suptitle(labels["detectionAlgorithm"] + " - histogram broja otkrivenih zajednica " + labels["weights"])
+        xlabel = "Broj otkrivenih zajednica ("+ labels["snapshotSize"] +" sekundi)"
     elif type == 2:
-        plt.suptitle("Histogram izoliranih mušica " + labels["weights"])
+        plt.suptitle(labels["detectionAlgorithm"] + " - histogram broja izoliranih mušica " + labels["weights"])
+        xlabel = "Broj izoliranih mušica (" + labels["snapshotSize"] + " sekundi)"
+    
+    fig.supxlabel(xlabel)
+    fig.supylabel("Broj snimaka mreža")
+
     plt.show()
 
 
@@ -146,23 +142,9 @@ def plot_heatmap(df, labels, negative):
 
 
 # create boxplot for distribution visualization
-def plot_boxplot(data, type, directed, accumulated, type1=''):
-    """
-    if multiple:
-        fig, _ = plt.subplots(4, 5, figsize=(11, 8))
-        fig.tight_layout(pad=4)
-
-        for i, dataDict in enumerate(data):
-            plt.subplot(4, 5, i+1)
-            plt.boxplot(dataDict.values(), labels=dataDict.keys())
-            plt.ylim(0, 1)
-
-            plt.title("{}. opservacija".format(i+1))
-
-        plt.suptitle("Distribucija koeficijenta preferencije (" + type + "), " + directed)    
-    """
+def plot_boxplot(dataDict, type, directed, accumulated, type1=''):
     plt.figure(figsize=(8, 6))
-    plt.boxplot(data.values(), labels=data.keys())
+    plt.boxplot(dataDict.values(), labels=dataDict.keys())
 
     plt.ylim(0, 1)
     if accumulated == False:

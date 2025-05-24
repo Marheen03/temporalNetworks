@@ -39,12 +39,7 @@ def get_labels(snapshots_folder, communityDetection, usingWeights):
 
 # returns array containing all flies
 def get_all_flies(numOfFlies):
-    allFlies = []
-    for i in range(numOfFlies):
-        flyString = 'fly' + str(i+1)
-        allFlies.append(flyString)
-    
-    return allFlies
+    return [f'fly{i+1}' for i in range(numOfFlies)]
 
 
 # removes edge with the highest centrality based on weight
