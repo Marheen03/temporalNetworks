@@ -9,13 +9,13 @@ import os
 communityDetectionAlgorithms = ["louvain"]
 usingWeights = True
 
-snapshots_folder = 'initial_networks/30_sec_window/'
+snapshots_folder = 'initial_networks/10_sec_window/'
 folders = os.listdir(snapshots_folder)
 allFlies = utils.get_all_flies(numOfFlies = 12)
 
 #gn = []
 #louvain = []
-groups = []
+#groups = []
 histDict = {}
 
 # for each group
@@ -79,9 +79,18 @@ for folder in folders:
             numberOfIsolatedNodes.append(numOfIsolatedNodes + isolatedCommunities)
 
             # histogram
-            #ISOLATED NODES:  numOfIsolatedNodes + isolatedCommunities
-            #COMMUNITY LENGTH:  len(communities)
+            """
+            #ISOLATED NODES:
+            histData.append(numOfIsolatedNodes + isolatedCommunities)
+            #COMMUNITY LENGTH:
             histData.append(len(communities))
+            #COMMUNITY SIZES:
+            communitySizes = [len(comm) for comm in communities]
+            histData.extend(communitySizes)
+            """
+            communitySizes = [len(comm) for comm in communities]
+            histData.extend(communitySizes)
+
             snapshots += 1
 
 
@@ -140,5 +149,4 @@ measuresDict = {
 }
 #plot.plot_grouped_bar(measuresDict, groups, labels, 1, snapshots)
 """
-
-plot.plot_histogram(histDict, 1, labels, snapshots)
+plot.plot_histogram(histDict, 3, labels)

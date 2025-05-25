@@ -44,14 +44,14 @@ def plot_grouped_bar(measuresDict, groups, labels, type, snapshots):
 
 
 # create histograms
-def plot_histogram(measuresDict, type, labels, snapshots):
+def plot_histogram(measuresDict, type, labels):
     fig, _ = plt.subplots(1, 3, figsize=(15, 5))
     fig.tight_layout(pad=4)
 
     for i, (group, data) in enumerate(measuresDict.items()):
         plt.subplot(1, 3, i+1)
 
-        if type == 1:
+        if type in [1, 3]:
             minValue = 1
         elif type == 2:
             minValue = 0
@@ -62,14 +62,15 @@ def plot_histogram(measuresDict, type, labels, snapshots):
         
         # extract heights of the bars
         heights = [bar.get_height() for bar in bars]
+        totalHeight = sum(heights)
         # add labels with both count and percentage
         for bar, height in zip(bars, heights):
             if height > 0:
                 plt.text(
-                    bar.get_x() + bar.get_width() / 2,
-                    height, 
-                    f'{int(height)} ({(height / snapshots * 100):.1f}%)', 
-                    ha='center', va='bottom'
+                    bar.get_x() + bar.get_width() / 2 + 0.15,
+                    height + 0.2,
+                    f'{int(height)} ({(height / totalHeight * 100):.1f}%)', 
+                    ha='center', va='bottom', fontsize=6
                 )
         plt.title(group)
 
@@ -79,6 +80,9 @@ def plot_histogram(measuresDict, type, labels, snapshots):
     elif type == 2:
         plt.suptitle(labels["detectionAlgorithm"] + " - histogram broja izoliranih mušica " + labels["weights"])
         xlabel = "Broj izoliranih mušica (" + labels["snapshotSize"] + " sekundi)"
+    elif type == 3:
+        plt.suptitle(labels["detectionAlgorithm"] + " - histogram veličina otkrivenih zajednica " + labels["weights"])
+        xlabel = "Veličina zajednica (" + labels["snapshotSize"] + " sekundi)"
     
     fig.supxlabel(xlabel)
     fig.supylabel("Broj snimaka mreža")
