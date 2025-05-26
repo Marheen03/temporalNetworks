@@ -90,38 +90,52 @@ def plot_histogram(measuresDict, type, labels):
     plt.show()
 
 
-# create colormap for flies' community distribution
-def plot_colormap(communitiesDicts, labels, allFlies):
-    # convert snapshots into a 2D NumPy array (shape: number of flies x number of snapshots)
-    data_matrix = np.array([[snapshot[fly] for snapshot in communitiesDicts] for fly in allFlies])
+# create colormap
+def plot_colormap(dict, labels, allFlies):
+    fig, axes = plt.subplots(3, 1, figsize=(14, 10), constrained_layout=False)
+    fig.subplots_adjust(hspace=0.5, left=0.08, right=0.85, top=0.92)
+    cmap = plt.get_cmap("tab10")
 
-    # create the colormap
-    plt.figure(figsize=(12, 6))
-    cmap = plt.get_cmap("tab10", np.max(data_matrix) + 1)  # adjust colors to match community IDs
-    plt.imshow(data_matrix, aspect="auto", cmap=cmap)
+    for i, (group, communitiesDicts) in enumerate(dict.items()):
+        data_matrix = np.array([[snapshot[fly] for snapshot in communitiesDicts] for fly in allFlies])
+        ax = axes[i]
 
-    # labels and formatting
-    ticksX = np.arange(0, len(communitiesDicts)+1, step=10)
-    ticksX[0] += 1
-    plt.xticks(ticks=ticksX, labels=ticksX)
-    plt.yticks(ticks=np.arange(len(allFlies)), labels=allFlies)
+        # Show the community heatmap
+        ax.imshow(data_matrix, aspect="auto", cmap=cmap, vmin=0, vmax=9)
+        ax.set_title(group)
 
-    plt.xlabel("Redni broj snimka mreže (" + labels["snapshotSize"] + " sekundi)")
-    plt.ylabel("Nazivi mušica")
-    plt.title(
+        # X ticks
+        ticksX = np.arange(0, len(communitiesDicts)+1, step=10)
+        ticksX[0] = 1
+        ax.set_xticks(ticksX)
+        ax.set_xticklabels(ticksX)
+
+        # Y ticks
+        ax.set_yticks(np.arange(len(allFlies)))
+        ax.set_yticklabels(allFlies)
+
+        # creates separate legend for subplot
+        community_ids = np.unique(data_matrix)
+        legend_labels = [f"Izolirana mušica" if j == 0 else f"{j}. zajednica" for j in community_ids]
+        patches = [mpatches.Patch(color=cmap(j), label=legend_labels[k]) for k, j in enumerate(community_ids)]
+
+        ax.legend(
+            handles=patches,
+            title="Zajednice",
+            loc="center left",
+            bbox_to_anchor=(1.01, 0.5),
+            borderaxespad=0.
+        )
+
+    fig.supxlabel("Redni broj snimka mreže (" + labels["snapshotSize"] + " sekundi)", fontsize=12)
+    fig.supylabel("Nazivi mušica", fontsize=12)
+    fig.suptitle(
         labels["detectionAlgorithm"] +
-        " - Pripadnost mušica zajednicama kroz vrijeme " +
-        labels["weights"] + " (" + labels["type"] + ")"
+        " - Pripadnost mušica zajednicama kroz vrijeme " + labels["weights"],
+        fontsize=14,
+        y=0.98
     )
 
-    # modify the label for community 0 (isolated node)
-    community_ids = np.unique(data_matrix)
-    labels = [f"Izolirana mušica" if i == 0 else f"{i}. zajednica" for i in community_ids]
-    patches = [mpatches.Patch(color=cmap(i), label=labels[idx]) for idx, i in enumerate(community_ids)]
-
-    # create a legend mapping community IDs to colors
-    plt.legend(handles=patches, title="Zajednice", bbox_to_anchor=(1, 1), loc="upper left")
-    plt.tight_layout(rect=[0.01, 0, 0.97, 1])  # adjust the paddings
     plt.show()
 
 
@@ -142,12 +156,10 @@ def plot_heatmap(matrixDict, labels, negative):
     else:
         num = 0
 
-    # Create a 2x2 grid of subplots
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     fig.tight_layout(pad=5)
     axes_flat = axes.flatten()
 
-    # Plot each heatmap into one of the 3 subplots
     for i, (group, df) in enumerate(matrixDict.items()):
         ax = axes_flat[i]
         sb.heatmap(
@@ -156,11 +168,11 @@ def plot_heatmap(matrixDict, labels, negative):
         )
         ax.set_title(group)
 
-    # Hide the unused subplot (the 4th one)
+    # hide the unused subplot (the 4th one)
     if len(matrixDict) < 4:
         axes_flat[-1].axis('off')
 
-    # Set a main title for the entire figure
+    # set a main title for the entire figure
     fig.suptitle(
         labels["detectionAlgorithm"] + " - Preferencije zajedničkih mušica " +
         labels["weights"] + ", " + labels["snapshotSize"] + " sekundi",

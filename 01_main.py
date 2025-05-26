@@ -16,8 +16,7 @@ allFlies = utils.get_all_flies(numOfFlies = 12)
 #gn = []
 #louvain = []
 #groups = []
-#histDict = {}
-matrixDict = {}
+dict = {}
 
 # for each group
 for folder in folders:
@@ -97,10 +96,9 @@ for folder in folders:
 
         consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
         communitiesDicts = utils.generate_community_dict(consistentSnapshots, allFlies)
-        #plot.plot_colormap(communitiesDicts, labels, allFlies)
 
-        matrix = utils.get_heatmap_data(communitiesDicts, allFlies, negative=False)
-        df = pd.DataFrame(matrix, allFlies, allFlies)
+        #matrix = utils.get_heatmap_data(communitiesDicts, allFlies, negative=False)
+        #df = pd.DataFrame(matrix, allFlies, allFlies)
 
         """
         fliesInTop3 = {key : 0 for key in allFlies}
@@ -121,10 +119,9 @@ for folder in folders:
     
     # grouped bar
     #groups.append(labels["type"])
-    #histDict.update({labels["type"]: histData})
+    #dict.update({labels["type"]: histData})
 
-    # matrix
-    matrixDict.update({labels["type"]: df})
+    dict.update({labels["type"]: communitiesDicts})
 
 """
 # grouped bar
@@ -132,8 +129,9 @@ measuresDict = {
     'Girvan-Newman': gn, 
     'Louvain': louvain
 }
-#plot.plot_grouped_bar(measuresDict, groups, labels, 1, snapshots)
-#plot.plot_histogram(histDict, 3, labels)
+#plot.plot_grouped_bar(dict, groups, labels, 1, snapshots)
+#plot.plot_histogram(dict, 3, labels)
 """
 
-plot.plot_heatmap(matrixDict, labels, False)
+#plot.plot_heatmap(dict, labels, False)
+plot.plot_colormap(dict, labels, allFlies)
