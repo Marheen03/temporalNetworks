@@ -9,14 +9,15 @@ import os
 communityDetectionAlgorithms = ["louvain"]
 usingWeights = True
 
-snapshots_folder = 'initial_networks/10_sec_window/'
+snapshots_folder = 'initial_networks/30_sec_window/'
 folders = os.listdir(snapshots_folder)
 allFlies = utils.get_all_flies(numOfFlies = 12)
 
 #gn = []
 #louvain = []
 #groups = []
-histDict = {}
+#histDict = {}
+matrixDict = {}
 
 # for each group
 for folder in folders:
@@ -38,7 +39,6 @@ for folder in folders:
         numberOfCommunities = 0
         isolatedFlies = 0
         snapshots = 0
-        maxCommunitySize = 0
         communitySizes = []
         numberOfIsolatedNodes = []
         snapshotsCommunities = []
@@ -64,10 +64,6 @@ for folder in folders:
                     communities = nx.community.louvain_communities(G, seed=100)
                 isolatedCommunities = 0
 
-            # finding the largest community
-            largestCommunity = len(max(communities, key=len))
-            maxCommunitySize = max(maxCommunitySize, largestCommunity)
-
             # counting number of found communities and isolated ones
             numberOfCommunities += len(communities)
             numOfIsolatedNodes = len(utils.find_isolated_nodes(communities, allFlies))
@@ -88,9 +84,6 @@ for folder in folders:
             communitySizes = [len(comm) for comm in communities]
             histData.extend(communitySizes)
             """
-            communitySizes = [len(comm) for comm in communities]
-            histData.extend(communitySizes)
-
             snapshots += 1
 
 
@@ -102,23 +95,12 @@ for folder in folders:
             louvain.append(numberOfCommunities)
         """
 
-        """
         consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
         communitiesDicts = utils.generate_community_dict(consistentSnapshots, allFlies)
-        plot.plot_colormap(communitiesDicts, labels, allFlies)
-        """
+        #plot.plot_colormap(communitiesDicts, labels, allFlies)
 
-
-        """
         matrix = utils.get_heatmap_data(communitiesDicts, allFlies, negative=False)
-        # get elements from matrix above diagonal
-        upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
-        #print(upper_elements.tolist())
-
-        #df = pd.DataFrame(matrix, allFlies, allFlies)
-        #plot.plot_heatmap(df, labels, False)
-        """
-
+        df = pd.DataFrame(matrix, allFlies, allFlies)
 
         """
         fliesInTop3 = {key : 0 for key in allFlies}
@@ -139,7 +121,10 @@ for folder in folders:
     
     # grouped bar
     #groups.append(labels["type"])
-    histDict.update({labels["type"]: histData})
+    #histDict.update({labels["type"]: histData})
+
+    # matrix
+    matrixDict.update({labels["type"]: df})
 
 """
 # grouped bar
@@ -148,5 +133,7 @@ measuresDict = {
     'Louvain': louvain
 }
 #plot.plot_grouped_bar(measuresDict, groups, labels, 1, snapshots)
+#plot.plot_histogram(histDict, 3, labels)
 """
-plot.plot_histogram(histDict, 3, labels)
+
+plot.plot_heatmap(matrixDict, labels, False)

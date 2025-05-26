@@ -136,18 +136,39 @@ def plot_bar_chart(fliesInTop3, labels):
 
 
 # create heatmap for flies' preference
-def plot_heatmap(df, labels, negative):
+def plot_heatmap(matrixDict, labels, negative):
     if negative:
         num = -1
     else:
         num = 0
-    
-    _, ax = plt.subplots(figsize=(10,5))
-    sb.heatmap(df, vmin=num, vmax=1, annot=True, linewidths=.5, ax=ax)
-    
-    plt.title(labels["detectionAlgorithm"] + " - Preferencije zajedničkih mušica " + labels["weights"] + ", " + labels["snapshotSize"] + " sekundi")
-    plt.xlabel('Mušice (' + labels["type"] + ')')
-    plt.ylabel('Mušice (' + labels["type"] + ')')
+
+    # Create a 2x2 grid of subplots
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    fig.tight_layout(pad=5)
+    axes_flat = axes.flatten()
+
+    # Plot each heatmap into one of the 3 subplots
+    for i, (group, df) in enumerate(matrixDict.items()):
+        ax = axes_flat[i]
+        sb.heatmap(
+            df, vmin=num, vmax=1, annot=True, linewidths=.5, ax=ax,
+            annot_kws={"fontsize": 9}
+        )
+        ax.set_title(group)
+
+    # Hide the unused subplot (the 4th one)
+    if len(matrixDict) < 4:
+        axes_flat[-1].axis('off')
+
+    # Set a main title for the entire figure
+    fig.suptitle(
+        labels["detectionAlgorithm"] + " - Preferencije zajedničkih mušica " +
+        labels["weights"] + ", " + labels["snapshotSize"] + " sekundi",
+        fontsize=14
+    )
+    fig.supxlabel('Mušice', fontsize=12)
+    fig.supylabel('Mušice', fontsize=12)
+
     plt.show()
 
 
