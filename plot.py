@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 import seaborn as sb
-from matplotlib import patches as mpatches
 
 
 # create grouped bar plot based on given data
@@ -86,7 +85,6 @@ def plot_histogram(measuresDict, type, labels):
     
     fig.supxlabel(xlabel)
     fig.supylabel("Broj snimaka mreža")
-
     plt.show()
 
 
@@ -135,7 +133,6 @@ def plot_colormap(dict, labels, allFlies):
         fontsize=14,
         y=0.98
     )
-
     plt.show()
 
 
@@ -185,14 +182,30 @@ def plot_heatmap(matrixDict, labels, negative):
 
 
 # create boxplot for distribution visualization
-def plot_boxplot(dataDict, type, directed, accumulated, type1=''):
-    plt.figure(figsize=(8, 6))
-    plt.boxplot(dataDict.values(), labels=dataDict.keys())
+def plot_boxplot(dicts, labels, accumulated):
+    if accumulated:
+        plt.figure(figsize=(8, 6))
+        plt.boxplot(dicts.values(), labels=dicts.keys())
+        plt.ylim(0, 1)
+        
+        plt.xlabel('Grupa mušica ('+ labels["snapshotSize"] +" sekundi)")
+        plt.ylabel('Koeficijenti preferencije')
+        plt.title("Distribucija koeficijenta preferencije ("+ 
+                  labels["detectionAlgorithm"] + ") "+ labels["weights"])
+    else:
+        fig, axes = plt.subplots(3, 1, figsize=(14, 10))
+        fig.tight_layout(pad=4)
 
-    plt.ylim(0, 1)
-    if accumulated == False:
-        plt.xlabel('Redni broj tretmana (' + type1 + ')')
-    plt.ylabel('Vrijednosti ' + directed)
-    plt.title("Distribucija koeficijenta preferencije (" + type + ")")
-    
+        for i, (group, dataDict) in enumerate(dicts.items()):
+            ax = axes[i]
+            ax.boxplot(dataDict.values(), labels=dataDict.keys())
+            ax.set_ylim(0, 1)
+            ax.set_title(group)
+
+        fig.text(0.5, 0.04, 'Redni broj tretmana', ha='center', fontsize=12)
+        fig.text(0.04, 0.5, 'Koeficijent preferencije', va='center',
+                 rotation='vertical', fontsize=12)
+        plt.suptitle("Distribucija koeficijenta preferencije ("+
+                     labels["detectionAlgorithm"] + ") "+ labels["weights"])
+        plt.subplots_adjust(top=0.9, bottom=0.11, left=0.1, right=0.95)
     plt.show()

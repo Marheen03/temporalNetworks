@@ -23,7 +23,7 @@ for folder in folders:
     folder_path = snapshots_folder + folder
     # load all GML networks
     snapshot_graphs = utils.load_files_from_folder(folder_path, n_sort=True, file_format=".gml")
-    histData = []
+    #histData = []
 
     # for each community detection algorithm
     for communityDetection in communityDetectionAlgorithms:
@@ -97,8 +97,12 @@ for folder in folders:
         consistentSnapshots = utils.track_consistent_communities(snapshotsCommunities)
         communitiesDicts = utils.generate_community_dict(consistentSnapshots, allFlies)
 
-        #matrix = utils.get_heatmap_data(communitiesDicts, allFlies, negative=False)
+        matrix = utils.get_heatmap_data(communitiesDicts, allFlies, negative=False)
         #df = pd.DataFrame(matrix, allFlies, allFlies)
+
+        # get elements above the matrix diagonal
+        upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
+        values = upper_elements.tolist()
 
         """
         fliesInTop3 = {key : 0 for key in allFlies}
@@ -121,7 +125,7 @@ for folder in folders:
     #groups.append(labels["type"])
     #dict.update({labels["type"]: histData})
 
-    dict.update({labels["type"]: communitiesDicts})
+    dict.update({labels["type"]: values})
 
 """
 # grouped bar
@@ -133,5 +137,7 @@ measuresDict = {
 #plot.plot_histogram(dict, 3, labels)
 """
 
+plot.plot_boxplot(dict, labels, accumulated=True)
+
 #plot.plot_heatmap(dict, labels, False)
-plot.plot_colormap(dict, labels, allFlies)
+#plot.plot_colormap(dict, labels, allFlies)
