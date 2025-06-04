@@ -4,7 +4,7 @@ import numpy as np
 
 
 numOfFlies = 12
-accumulated = False
+accumulated = True
 isDirected = True
 usingWeights = True
 

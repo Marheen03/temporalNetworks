@@ -190,7 +190,7 @@ def plot_boxplot(dicts, labels, accumulated):
         
         plt.xlabel('Grupa mušica ('+ labels["snapshotSize"] +" sekundi)")
         plt.ylabel('Koeficijenti preferencije')
-        plt.title("Distribucija koeficijenta preferencije ("+ 
+        plt.title("Distribucija koeficijenta preferencije po grupama ("+ 
                   labels["detectionAlgorithm"] + ") "+ labels["weights"])
     else:
         fig, axes = plt.subplots(3, 1, figsize=(14, 10))
@@ -202,10 +202,11 @@ def plot_boxplot(dicts, labels, accumulated):
             ax.set_ylim(0, 1)
             ax.set_title(group)
 
-        fig.text(0.5, 0.04, 'Redni broj tretmana', ha='center', fontsize=12)
+        fig.text(0.5, 0.04, 'Redni broj promatranja ('+ labels["snapshotSize"] +' sekundi)',
+                 ha='center', fontsize=12)
         fig.text(0.04, 0.5, 'Koeficijent preferencije', va='center',
                  rotation='vertical', fontsize=12)
-        plt.suptitle("Distribucija koeficijenta preferencije ("+
+        plt.suptitle("Distribucija koeficijenta preferencije po promatranjima ("+
                      labels["detectionAlgorithm"] + ") "+ labels["weights"])
         plt.subplots_adjust(top=0.9, bottom=0.11, left=0.1, right=0.95)
     plt.show()
