@@ -9,7 +9,7 @@ import os
 communityDetectionAlgorithms = ["louvain"]
 usingWeights = True
 
-snapshots_folder = 'initial_networks/30_sec_window/'
+snapshots_folder = 'initial_networks/10_sec_window/'
 folders = os.listdir(snapshots_folder)
 allFlies = utils.get_all_flies(numOfFlies = 12)
 
@@ -137,7 +137,9 @@ measuresDict = {
 #plot.plot_histogram(dict, 3, labels)
 """
 
-plot.plot_boxplot(dict, labels, accumulated=True)
+#plot.plot_boxplot(dict, labels, accumulated=True)
 
 #plot.plot_heatmap(dict, labels, False)
 #plot.plot_colormap(dict, labels, allFlies)
+
+utils.statistical_test(dict)

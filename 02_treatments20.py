@@ -2,7 +2,6 @@ import utils, plot, os
 import networkx as nx
 import numpy as np
 
-
 numOfFlies = 12
 accumulated = True
 isDirected = True
@@ -75,4 +74,7 @@ for folder in folders:
     else:
         cumulativeDict.update({labels["type"] : dict})
 
-plot.plot_boxplot(cumulativeDict, labels, accumulated)
+
+#plot.plot_boxplot(cumulativeDict, labels, accumulated)
+
+utils.statistical_test(cumulativeDict)

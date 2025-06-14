@@ -1,6 +1,7 @@
 import os, sys, re
 import networkx as nx
 import numpy as np
+from scipy import stats
 
 
 # returns appropriate labels for plots
@@ -291,3 +292,35 @@ def get_heatmap_data(communitiesDict, allFlies, negative):
     
     # normalize matrix elements (divide elements with total number of snapshots)
     return npArray / numOfSnapshots
+
+
+def statistical_test(dict):
+    """
+    Performs statistical test.
+
+    Parameters:
+    dict (dict): Dictionary containing coefficients of common community preference for each group.
+    """
+    print()
+     
+    # check normal distribution
+    isSignificant = []
+    for group, array in dict.items():
+        res = stats.normaltest(array)
+        print("{}: p-vrijednost = {}".format(group, res.pvalue))
+        isSignificant.append(res.pvalue > 0.05)
+    values = list(dict.values())
+
+    # if all p-values are greater than 0.05
+    if all(isSignificant):
+        print("\nPostoji normalna distribucija - jednosmjerni ANOVA test")
+        _, p_value = stats.f_oneway(values[0], values[1], values[2])
+    else:
+        print("\nNe postoji normalna distribucija - Kruskal-Wallis test")
+        _, p_value = stats.kruskal(values[0], values[1], values[2])
+
+    print("P-vrijednost:", p_value)
+    if p_value <= 0.05:
+        print("Postoji statistički značajna razlika")
+    else:
+        print("Ne postoji statistički značajna razlika")
