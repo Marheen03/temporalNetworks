@@ -136,16 +136,6 @@ def plot_colormap(dict, labels, allFlies):
     plt.show()
 
 
-# create bar chart for flies in identical communities
-def plot_bar_chart(fliesInTop3, labels):
-    plt.bar(fliesInTop3.keys(), fliesInTop3.values())
-    plt.title(labels["detectionAlgorithm"] + " - Najčešće mušice u istoj zajednici " + labels["weights"])
-    
-    plt.xlabel('Mušice (' + labels["type"] + ')')
-    plt.ylabel('Broj nalaska u top 3 (snapshotovi od ' + labels["snapshotSize"] +  ' sekundi)')
-    plt.show()
-
-
 # create heatmap for flies' preference
 def plot_heatmap(matrixDict, labels, negative):
     if negative:

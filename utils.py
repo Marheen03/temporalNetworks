@@ -221,34 +221,6 @@ def generate_community_dict(consistentSnapshots, allFlies):
     return communitiesDicts
 
 
-def shared_communites(fly, communitiesDict, allFlies):
-    """
-    Counts occurences when chosen fly was in identical community with all flies
-    through all snapshots.
-    
-    Parameters:
-    fly (string): List of snapshots (each snapshot is a list of communities).
-    communitiesDict (array): Array of community distributions for each snapshot.
-    allFlies (list): List containing names of all flies.
-    
-    Returns:
-    dict: Flies as keys and number of occurences in the same community as values.
-    """
-    allFliesCopy = [flyCopy for flyCopy in allFlies if flyCopy != fly]
-    mutual_flies = {key : 0 for key in allFliesCopy}
-
-    for i in range(len(communitiesDict)):
-        communityID = communitiesDict[i][fly]
-        if communityID == 0:
-            continue
-
-        for flyCopy in allFliesCopy:
-            if communitiesDict[i][flyCopy] == communityID:
-                mutual_flies[flyCopy] += 1
-    
-    return mutual_flies
-
-
 def get_heatmap_data(communitiesDict, allFlies, negative):
     """
     Creates NumPy array which can be used to create heatmap

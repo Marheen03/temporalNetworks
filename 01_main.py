@@ -103,23 +103,6 @@ for folder in folders:
         # get elements above the matrix diagonal
         upper_elements = matrix[np.triu_indices_from(matrix, k=1)]
         values = upper_elements.tolist()
-
-        """
-        fliesInTop3 = {key : 0 for key in allFlies}
-        for fly in allFlies:
-            sharedCommunities = utils.shared_communites(fly, communitiesDicts, allFlies)
-            # Sort based on Values
-            sharedCommunitiesSorted = {k : v for k, v in sorted(sharedCommunities.items(), key=lambda item: item[1], reverse=True)}
-            
-            counter = 0
-            for k in sharedCommunitiesSorted.keys():
-                fliesInTop3[k] += 1
-
-                counter += 1
-                if counter == 3:
-                    break
-        plot.plot_bar_chart(fliesInTop3, labels) 
-        """
     
     # grouped bar
     #groups.append(labels["type"])
