@@ -266,33 +266,49 @@ def get_heatmap_data(communitiesDict, allFlies, negative):
     return npArray / numOfSnapshots
 
 
-def statistical_test(dict):
+def statistical_test(dict, automatic):
     """
     Performs statistical test.
 
     Parameters:
     dict (dict): Dictionary containing coefficients of common community preference for each group.
+
+    Returns:
+    int: p-values from tests.
     """
     print()
-     
-    # check normal distribution
-    isSignificant = []
-    for group, array in dict.items():
-        res = stats.normaltest(array)
-        print("{}: p-vrijednost = {}".format(group, res.pvalue))
-        isSignificant.append(res.pvalue > 0.05)
-    values = list(dict.values())
+    p1, p2, p3 = 0, 0, 0
+    
+    if automatic:
+        # check normal distribution
+        isSignificant = []
+        for group, array in dict.items():
+            res = stats.normaltest(array)
+            print("{}: p-vrijednost = {}".format(group, res.pvalue))
+            isSignificant.append(res.pvalue > 0.05)
+        values = list(dict.values())
 
-    # if all p-values are greater than 0.05
-    if all(isSignificant):
-        print("\nPostoji normalna distribucija - jednosmjerni ANOVA test")
-        _, p_value = stats.f_oneway(values[0], values[1], values[2])
-    else:
-        print("\nNe postoji normalna distribucija - Kruskal-Wallis test")
-        _, p_value = stats.kruskal(values[0], values[1], values[2])
+        # if all p-values are greater than 0.05
+        if all(isSignificant):
+            print("\nPostoji normalna distribucija - jednosmjerni ANOVA test")
+            _, p_value = stats.f_oneway(values[0], values[1], values[2])
+        else:
+            print("\nNe postoji normalna distribucija - Kruskal-Wallis test")
+            _, p_value = stats.kruskal(values[0], values[1], values[2])
 
-    print("P-vrijednost:", p_value)
-    if p_value <= 0.05:
-        print("Postoji statistički značajna razlika")
+        print("P-vrijednost:", p_value)
+        if p_value <= 0.05:
+            print("Postoji statistički značajna razlika")
+        else:
+            print("Ne postoji statistički značajna razlika")
     else:
-        print("Ne postoji statistički značajna razlika")
+        p1 = stats.ttest_ind(dict["MLADE"], dict["STARE"]).pvalue
+        p2 = stats.ttest_ind(dict["STARE"], dict["IZOLIRANE"]).pvalue
+        p3 = stats.ttest_ind(dict["MLADE"], dict["IZOLIRANE"]).pvalue
+
+        print("P-vrijednosti:")
+        print("MLADE i STARE:", p1)
+        print("STARE i IZOLIRANE:", p2)
+        print("MLADE i IZOLIRANE:", p3)
+
+    return p1, p2, p3
