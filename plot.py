@@ -181,7 +181,6 @@ def plot_boxplot(dicts, labels, accumulated, p_values):
         add_significance_bars(ax, p_values[0], 1, 2, 0.73)
         add_significance_bars(ax, p_values[1], 2, 3, 0.78)
         add_significance_bars(ax, p_values[2], 1, 3, 0.83)
-
         
         ax.set_xlabel('Grupa mušica ('+ labels["snapshotSize"] +" sekundi)")
         ax.set_ylabel('Koeficijenti preferencije')
@@ -206,14 +205,15 @@ def plot_boxplot(dicts, labels, accumulated, p_values):
         plt.subplots_adjust(top=0.9, bottom=0.11, left=0.1, right=0.95)
     plt.show()
 
+
 # Add significance bars with custom symbols and sizes based on p-value.
 def add_significance_bars(ax, p_value, x1, x2, y):
     y_offset = 0.02
     ax.plot([x1, x1, x2, x2], [y, y + y_offset, y + y_offset, y], color='black')
     
     if p_value < 0.001:
-        ax.text((x1 + x2) / 2, y + y_offset + 0.005, '*', fontsize=16, ha='center')
+        ax.text((x1 + x2) / 2, y + y_offset + 0.005, '***', fontsize=16, ha='center', color='red')
     elif p_value < 0.01:
-        ax.text((x1 + x2) / 2, y + y_offset + 0.005, '*', fontsize=16, ha='center')
+        ax.text((x1 + x2) / 2, y + y_offset + 0.005, '**', fontsize=16, ha='center', color='orange')
     elif p_value < 0.05:
-        ax.text((x1 + x2) / 2, y + y_offset + 0.005, '*', fontsize=16, ha='center')
+        ax.text((x1 + x2) / 2, y + y_offset + 0.005, '*', fontsize=16, ha='center', color='green')
