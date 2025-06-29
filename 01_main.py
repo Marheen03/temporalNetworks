@@ -106,6 +106,8 @@ for folder in folders:
     
     # grouped bar
     #groups.append(labels["type"])
+
+    # HIST COMMUNITY SIZES
     #dict.update({labels["type"]: histData})
 
     dict.update({labels["type"]: values})

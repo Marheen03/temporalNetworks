@@ -81,10 +81,13 @@ def plot_histogram(measuresDict, type, labels):
         xlabel = "Broj izoliranih mušica (" + labels["snapshotSize"] + " sekundi)"
     elif type == 3:
         plt.suptitle(labels["detectionAlgorithm"] + " - histogram veličina otkrivenih zajednica " + labels["weights"])
-        xlabel = "Veličina zajednica (" + labels["snapshotSize"] + " sekundi)"
+        xlabel = "Veličina zajednice (" + labels["snapshotSize"] + " sekundi)"
     
     fig.supxlabel(xlabel)
-    fig.supylabel("Broj snimaka mreža")
+    if type == 3:
+        fig.supylabel("Broj zajednica")
+    else:
+        fig.supylabel("Broj snimaka mreža")
     plt.show()
 
 
