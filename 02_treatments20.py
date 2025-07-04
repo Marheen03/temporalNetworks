@@ -76,6 +76,6 @@ for folder in folders:
         cumulativeDict.update({labels["type"] : dict})
 
 
-p1, p2, p3 = utils.statistical_test(cumulativeDict, automatic=False)
+p1, p2, p3 = utils.statistical_test(cumulativeDict, automatic=True)
 
-plot.plot_boxplot(cumulativeDict, labels, accumulated, [p1, p2, p3])
+# plot.plot_boxplot(cumulativeDict, labels, accumulated, [p1, p2, p3])
